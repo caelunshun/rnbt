@@ -22,6 +22,12 @@ pub enum NbtValueType {
     LongArray,
 }
 
+impl Default for NbtValueType {
+    fn default() -> Self {
+        NbtValueType::End
+    }
+}
+
 impl NbtValueType {
     fn id(&self) -> u8 {
         match self {
@@ -76,6 +82,12 @@ pub enum NbtValue {
     Compound(NbtTagCompound),
     IntArray(NbtTagIntArray),
     LongArray(NbtTagLongArray),
+}
+
+impl Default for NbtValue {
+    fn default() -> Self {
+        NbtValue::End
+    }
 }
 
 impl NbtValue {
@@ -359,62 +371,62 @@ fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Re
     })
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagByte {
     pub name: String,
     pub value: i8,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagShort {
     pub name: String,
     pub value: i16,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagInt {
     pub name: String,
     pub value: i32,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagLong {
     pub name: String,
     pub value: i64,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagFloat {
     pub name: String,
     pub value: f32,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagDouble {
     pub name: String,
     pub value: f64,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagByteArray {
     pub name: String,
     pub values: Vec<i8>,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagString {
     pub name: String,
     pub value: String,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagList {
     pub name: String,
     pub ty: NbtValueType,
     pub values: Vec<NbtValue>,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagCompound {
     pub name: String,
     pub values: HashMap<String, NbtValue>,
@@ -426,13 +438,13 @@ impl NbtTagCompound {
     }
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagIntArray {
     pub name: String,
     pub values: Vec<i32>,
 }
 
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, new, Default)]
 pub struct NbtTagLongArray {
     pub name: String,
     pub values: Vec<i64>,
