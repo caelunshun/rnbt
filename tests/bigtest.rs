@@ -23,7 +23,7 @@ fn bigtest() {
     }
 
     // Parse NBT
-    let root = rnbt::parse(&buf).unwrap();
+    let root = rnbt::parse_bytes(&buf).unwrap();
 
     // Confirm that values are correct
     let c = root.compound().unwrap();

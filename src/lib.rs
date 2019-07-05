@@ -176,9 +176,12 @@ impl NbtValue {
     }
 }
 
-pub fn parse(bytes: &[u8]) -> Result<NbtValue, ()> {
+pub fn parse_bytes(bytes: &[u8]) -> Result<NbtValue, ()> {
     let mut cursor = Cursor::new(bytes);
+    parse(&mut cursor)
+}
 
+pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtValue, ()> {
     // Read root compound - read type first
     let ty = {
         let id = cursor.read_u8().map_err(|_| ())?;
@@ -195,7 +198,7 @@ pub fn parse(bytes: &[u8]) -> Result<NbtValue, ()> {
         name.push(ch as char);
     }
 
-    let root = parse_compound(&mut cursor, name)?;
+    let root = parse_compound(cursor, name)?;
 
     Ok(NbtValue::Compound(root))
 }
