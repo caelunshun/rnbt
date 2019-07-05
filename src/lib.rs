@@ -412,48 +412,48 @@ fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
-            buf.write_i8(val.value);
+            buf.write_i8(val.value).unwrap();
         }
         NbtValue::Short(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
-            buf.write_i16::<BigEndian>(val.value);
+            buf.write_i16::<BigEndian>(val.value).unwrap();
         }
         NbtValue::Int(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
-            buf.write_i32::<BigEndian>(val.value);
+            buf.write_i32::<BigEndian>(val.value).unwrap();
         }
         NbtValue::Long(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
-            buf.write_i64::<BigEndian>(val.value);
+            buf.write_i64::<BigEndian>(val.value).unwrap();
         }
         NbtValue::Float(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
-            buf.write_f32::<BigEndian>(val.value);
+            buf.write_f32::<BigEndian>(val.value).unwrap();
         }
         NbtValue::Double(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
-            buf.write_f64::<BigEndian>(val.value);
+            buf.write_f64::<BigEndian>(val.value).unwrap();
         }
         NbtValue::ByteArray(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
 
-            buf.write_i16::<BigEndian>(val.values.len() as i16);
+            buf.write_i16::<BigEndian>(val.values.len() as i16).unwrap();
             buf.reserve(val.values.len());
 
             for x in &val.values {
-                buf.write_i8(*x);
+                buf.write_i8(*x).unwrap();
             }
         }
         NbtValue::String(val) => {
@@ -461,7 +461,7 @@ fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
                 write_tag_name(buf, &val.name);
             }
 
-            buf.write_u16::<BigEndian>(val.value.len() as u16);
+            buf.write_u16::<BigEndian>(val.value.len() as u16).unwrap();
             buf.write(val.value.as_bytes()).unwrap();
         }
         NbtValue::List(val) => {
