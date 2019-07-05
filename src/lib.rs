@@ -1,6 +1,7 @@
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::collections::HashMap;
 use std::io::Cursor;
+use std::io::Write;
 
 #[macro_use]
 extern crate derive_new;
@@ -91,6 +92,24 @@ impl Default for NbtValue {
 }
 
 impl NbtValue {
+    pub fn ty(&self) -> NbtValueType {
+        match &self {
+            NbtValue::End => NbtValueType::End,
+            NbtValue::Byte(_) => NbtValueType::Byte,
+            NbtValue::Short(_) => NbtValueType::Short,
+            NbtValue::Int(_) => NbtValueType::Int,
+            NbtValue::Long(_) => NbtValueType::Int,
+            NbtValue::Float(_) => NbtValueType::Float,
+            NbtValue::Double(_) => NbtValueType::Double,
+            NbtValue::ByteArray(_) => NbtValueType::ByteArray,
+            NbtValue::String(_) => NbtValueType::String,
+            NbtValue::List(_) => NbtValueType::List,
+            NbtValue::Compound(_) => NbtValueType::Compound,
+            NbtValue::IntArray(_) => NbtValueType::IntArray,
+            NbtValue::LongArray(_) => NbtValueType::End,
+        }
+    }
+
     pub fn byte(&self) -> Option<&NbtTagByte> {
         if let NbtValue::Byte(x) = self {
             Some(x)
@@ -369,6 +388,138 @@ fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Re
             NbtValue::LongArray(NbtTagLongArray::new(name.clone(), buf))
         }
     })
+}
+
+pub fn write(buf: &mut Vec<u8>, compound: &NbtTagCompound) {
+    write_tag_type(buf, NbtValueType::Compound);
+    write_tag_name(buf, &compound.name);
+    write_compound(buf, compound);
+}
+
+fn write_compound(buf: &mut Vec<u8>, compound: &NbtTagCompound) {
+    for val in compound.values.values() {
+        write_value(buf, val, true);
+    }
+}
+
+fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
+    let ty = value.ty();
+    write_tag_type(buf, ty);
+
+    match value {
+        NbtValue::End => (),
+        NbtValue::Byte(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+            buf.write_i8(val.value);
+        }
+        NbtValue::Short(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+            buf.write_i16::<BigEndian>(val.value);
+        }
+        NbtValue::Int(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+            buf.write_i32::<BigEndian>(val.value);
+        }
+        NbtValue::Long(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+            buf.write_i64::<BigEndian>(val.value);
+        }
+        NbtValue::Float(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+            buf.write_f32::<BigEndian>(val.value);
+        }
+        NbtValue::Double(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+            buf.write_f64::<BigEndian>(val.value);
+        }
+        NbtValue::ByteArray(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+
+            buf.write_i16::<BigEndian>(val.values.len() as i16);
+            buf.reserve(val.values.len());
+
+            for x in &val.values {
+                buf.write_i8(*x);
+            }
+        }
+        NbtValue::String(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+
+            buf.write_u16::<BigEndian>(val.value.len() as u16);
+            buf.write(val.value.as_bytes()).unwrap();
+        }
+        NbtValue::List(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+
+            write_tag_type(buf, val.ty);
+            buf.write_i32::<BigEndian>(val.values.len() as i32).unwrap();
+
+            for val in &val.values {
+                // Finally, an actual application of recursion
+                write_value(buf, val, false);
+            }
+        }
+        NbtValue::Compound(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+
+            write_compound(buf, val);
+        }
+        NbtValue::IntArray(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+
+            buf.write_i32::<BigEndian>(val.values.len() as i32).unwrap();
+
+            buf.reserve(val.values.len());
+
+            for x in &val.values {
+                buf.write_i32::<BigEndian>(*x).unwrap();
+            }
+        }
+        NbtValue::LongArray(val) => {
+            if write_name {
+                write_tag_name(buf, &val.name);
+            }
+
+            buf.write_i32::<BigEndian>(val.values.len() as i32).unwrap();
+
+            buf.reserve(val.values.len());
+
+            for x in &val.values {
+                buf.write_i64::<BigEndian>(*x).unwrap();
+            }
+        }
+    }
+}
+
+fn write_tag_name(buf: &mut Vec<u8>, s: &str) {
+    buf.write_i16::<BigEndian>(s.len() as i16).unwrap();
+    buf.write(s.as_bytes()).unwrap();
+}
+
+fn write_tag_type(buf: &mut Vec<u8>, ty: NbtValueType) {
+    buf.write_u8(ty.id()).unwrap();
 }
 
 #[derive(Clone, Debug, new, Default)]
