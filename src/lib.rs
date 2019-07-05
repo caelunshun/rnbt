@@ -78,6 +78,104 @@ pub enum NbtValue {
     LongArray(NbtTagLongArray),
 }
 
+impl NbtValue {
+    pub fn byte(&self) -> Option<&NbtTagByte> {
+        if let NbtValue::Byte(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn short(&self) -> Option<&NbtTagShort> {
+        if let NbtValue::Short(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn int(&self) -> Option<&NbtTagInt> {
+        if let NbtValue::Int(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn long(&self) -> Option<&NbtTagLong> {
+        if let NbtValue::Long(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn float(&self) -> Option<&NbtTagFloat> {
+        if let NbtValue::Float(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn double(&self) -> Option<&NbtTagDouble> {
+        if let NbtValue::Double(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn byte_array(&self) -> Option<&NbtTagByteArray> {
+        if let NbtValue::ByteArray(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn string(&self) -> Option<&NbtTagString> {
+        if let NbtValue::String(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn list(&self) -> Option<&NbtTagList> {
+        if let NbtValue::List(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn compound(&self) -> Option<&NbtTagCompound> {
+        if let NbtValue::Compound(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn int_array(&self) -> Option<&NbtTagIntArray> {
+        if let NbtValue::IntArray(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+
+    pub fn long_array(&self) -> Option<&NbtTagLongArray> {
+        if let NbtValue::LongArray(x) = self {
+            Some(x)
+        } else {
+            None
+        }
+    }
+}
+
 pub fn parse(bytes: &[u8]) -> Result<NbtValue, ()> {
     let mut cursor = Cursor::new(bytes);
 
