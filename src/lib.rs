@@ -580,7 +580,7 @@ pub struct NbtTagList {
 #[derive(Clone, Debug, Default)]
 pub struct NbtTagCompound {
     pub name: String,
-    values: HashMap<String, NbtTag>,
+    pub values: HashMap<String, NbtTag>,
 }
 
 impl NbtTagCompound {
