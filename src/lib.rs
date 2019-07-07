@@ -7,7 +7,7 @@ use std::io::Write;
 extern crate derive_new;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum NbtValueType {
+pub enum NbtTagType {
     End,
     Byte,
     Short,
@@ -23,53 +23,53 @@ pub enum NbtValueType {
     LongArray,
 }
 
-impl Default for NbtValueType {
+impl Default for NbtTagType {
     fn default() -> Self {
-        NbtValueType::End
+        NbtTagType::End
     }
 }
 
-impl NbtValueType {
+impl NbtTagType {
     fn id(&self) -> u8 {
         match self {
-            NbtValueType::End => 0,
-            NbtValueType::Byte => 1,
-            NbtValueType::Short => 2,
-            NbtValueType::Int => 3,
-            NbtValueType::Long => 4,
-            NbtValueType::Float => 5,
-            NbtValueType::Double => 6,
-            NbtValueType::ByteArray => 7,
-            NbtValueType::String => 8,
-            NbtValueType::List => 9,
-            NbtValueType::Compound => 10,
-            NbtValueType::IntArray => 11,
-            NbtValueType::LongArray => 12,
+            NbtTagType::End => 0,
+            NbtTagType::Byte => 1,
+            NbtTagType::Short => 2,
+            NbtTagType::Int => 3,
+            NbtTagType::Long => 4,
+            NbtTagType::Float => 5,
+            NbtTagType::Double => 6,
+            NbtTagType::ByteArray => 7,
+            NbtTagType::String => 8,
+            NbtTagType::List => 9,
+            NbtTagType::Compound => 10,
+            NbtTagType::IntArray => 11,
+            NbtTagType::LongArray => 12,
         }
     }
 
     fn from_id(id: u8) -> Option<Self> {
         match id {
-            0 => Some(NbtValueType::End),
-            1 => Some(NbtValueType::Byte),
-            2 => Some(NbtValueType::Short),
-            3 => Some(NbtValueType::Int),
-            4 => Some(NbtValueType::Long),
-            5 => Some(NbtValueType::Float),
-            6 => Some(NbtValueType::Double),
-            7 => Some(NbtValueType::ByteArray),
-            8 => Some(NbtValueType::String),
-            9 => Some(NbtValueType::List),
-            10 => Some(NbtValueType::Compound),
-            11 => Some(NbtValueType::IntArray),
-            12 => Some(NbtValueType::LongArray),
+            0 => Some(NbtTagType::End),
+            1 => Some(NbtTagType::Byte),
+            2 => Some(NbtTagType::Short),
+            3 => Some(NbtTagType::Int),
+            4 => Some(NbtTagType::Long),
+            5 => Some(NbtTagType::Float),
+            6 => Some(NbtTagType::Double),
+            7 => Some(NbtTagType::ByteArray),
+            8 => Some(NbtTagType::String),
+            9 => Some(NbtTagType::List),
+            10 => Some(NbtTagType::Compound),
+            11 => Some(NbtTagType::IntArray),
+            12 => Some(NbtTagType::LongArray),
             _ => None,
         }
     }
 }
 
 #[derive(Clone, Debug)]
-pub enum NbtValue {
+pub enum NbtTag {
     End,
     Byte(NbtTagByte),
     Short(NbtTagShort),
@@ -85,33 +85,33 @@ pub enum NbtValue {
     LongArray(NbtTagLongArray),
 }
 
-impl Default for NbtValue {
+impl Default for NbtTag {
     fn default() -> Self {
-        NbtValue::End
+        NbtTag::End
     }
 }
 
-impl NbtValue {
-    pub fn ty(&self) -> NbtValueType {
+impl NbtTag {
+    pub fn ty(&self) -> NbtTagType {
         match &self {
-            NbtValue::End => NbtValueType::End,
-            NbtValue::Byte(_) => NbtValueType::Byte,
-            NbtValue::Short(_) => NbtValueType::Short,
-            NbtValue::Int(_) => NbtValueType::Int,
-            NbtValue::Long(_) => NbtValueType::Int,
-            NbtValue::Float(_) => NbtValueType::Float,
-            NbtValue::Double(_) => NbtValueType::Double,
-            NbtValue::ByteArray(_) => NbtValueType::ByteArray,
-            NbtValue::String(_) => NbtValueType::String,
-            NbtValue::List(_) => NbtValueType::List,
-            NbtValue::Compound(_) => NbtValueType::Compound,
-            NbtValue::IntArray(_) => NbtValueType::IntArray,
-            NbtValue::LongArray(_) => NbtValueType::End,
+            NbtTag::End => NbtTagType::End,
+            NbtTag::Byte(_) => NbtTagType::Byte,
+            NbtTag::Short(_) => NbtTagType::Short,
+            NbtTag::Int(_) => NbtTagType::Int,
+            NbtTag::Long(_) => NbtTagType::Int,
+            NbtTag::Float(_) => NbtTagType::Float,
+            NbtTag::Double(_) => NbtTagType::Double,
+            NbtTag::ByteArray(_) => NbtTagType::ByteArray,
+            NbtTag::String(_) => NbtTagType::String,
+            NbtTag::List(_) => NbtTagType::List,
+            NbtTag::Compound(_) => NbtTagType::Compound,
+            NbtTag::IntArray(_) => NbtTagType::IntArray,
+            NbtTag::LongArray(_) => NbtTagType::End,
         }
     }
 
     pub fn byte(&self) -> Option<NbtTagByte> {
-        if let NbtValue::Byte(x) = self {
+        if let NbtTag::Byte(x) = self {
             Some(x.clone())
         } else {
             None
@@ -119,7 +119,7 @@ impl NbtValue {
     }
 
     pub fn short(&self) -> Option<NbtTagShort> {
-        if let NbtValue::Short(x) = self {
+        if let NbtTag::Short(x) = self {
             Some(x.clone())
         } else {
             None
@@ -127,7 +127,7 @@ impl NbtValue {
     }
 
     pub fn int(&self) -> Option<NbtTagInt> {
-        if let NbtValue::Int(x) = self {
+        if let NbtTag::Int(x) = self {
             Some(x.clone())
         } else {
             None
@@ -135,7 +135,7 @@ impl NbtValue {
     }
 
     pub fn long(&self) -> Option<NbtTagLong> {
-        if let NbtValue::Long(x) = self {
+        if let NbtTag::Long(x) = self {
             Some(x.clone())
         } else {
             None
@@ -143,7 +143,7 @@ impl NbtValue {
     }
 
     pub fn float(&self) -> Option<NbtTagFloat> {
-        if let NbtValue::Float(x) = self {
+        if let NbtTag::Float(x) = self {
             Some(x.clone())
         } else {
             None
@@ -151,7 +151,7 @@ impl NbtValue {
     }
 
     pub fn double(&self) -> Option<NbtTagDouble> {
-        if let NbtValue::Double(x) = self {
+        if let NbtTag::Double(x) = self {
             Some(x.clone())
         } else {
             None
@@ -159,7 +159,7 @@ impl NbtValue {
     }
 
     pub fn byte_array(&self) -> Option<NbtTagByteArray> {
-        if let NbtValue::ByteArray(x) = self {
+        if let NbtTag::ByteArray(x) = self {
             Some(x.clone())
         } else {
             None
@@ -167,7 +167,7 @@ impl NbtValue {
     }
 
     pub fn string(&self) -> Option<NbtTagString> {
-        if let NbtValue::String(x) = self {
+        if let NbtTag::String(x) = self {
             Some(x.clone())
         } else {
             None
@@ -175,7 +175,7 @@ impl NbtValue {
     }
 
     pub fn list(&self) -> Option<NbtTagList> {
-        if let NbtValue::List(x) = self {
+        if let NbtTag::List(x) = self {
             Some(x.clone())
         } else {
             None
@@ -183,7 +183,7 @@ impl NbtValue {
     }
 
     pub fn compound(&self) -> Option<NbtTagCompound> {
-        if let NbtValue::Compound(x) = self {
+        if let NbtTag::Compound(x) = self {
             Some(x.clone())
         } else {
             None
@@ -191,7 +191,7 @@ impl NbtValue {
     }
 
     pub fn int_array(&self) -> Option<NbtTagIntArray> {
-        if let NbtValue::IntArray(x) = self {
+        if let NbtTag::IntArray(x) = self {
             Some(x.clone())
         } else {
             None
@@ -199,7 +199,7 @@ impl NbtValue {
     }
 
     pub fn long_array(&self) -> Option<NbtTagLongArray> {
-        if let NbtValue::LongArray(x) = self {
+        if let NbtTag::LongArray(x) = self {
             Some(x.clone())
         } else {
             None
@@ -207,18 +207,18 @@ impl NbtValue {
     }
 }
 
-pub fn parse_bytes(bytes: &[u8]) -> Result<NbtValue, ()> {
+pub fn parse_bytes(bytes: &[u8]) -> Result<NbtTag, ()> {
     let mut cursor = Cursor::new(bytes);
     parse(&mut cursor)
 }
 
-pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtValue, ()> {
+pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtTag, ()> {
     // Read root compound - read type first
     let ty = {
         let id = cursor.read_u8().map_err(|_| ())?;
-        NbtValueType::from_id(id).ok_or_else(|| ())?
+        NbtTagType::from_id(id).ok_or_else(|| ())?
     };
-    if ty != NbtValueType::Compound {
+    if ty != NbtTagType::Compound {
         return Err(());
     }
 
@@ -231,7 +231,7 @@ pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtValue, ()> {
 
     let root = parse_compound(cursor, name)?;
 
-    Ok(NbtValue::Compound(root))
+    Ok(NbtTag::Compound(root))
 }
 
 fn parse_compound(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagCompound, ()> {
@@ -244,8 +244,8 @@ fn parse_compound(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagComp
         let type_id = cursor.read_u8().map_err(|_| ())?;
         println!("111");
 
-        let ty = NbtValueType::from_id(type_id).ok_or_else(|| ())?;
-        if ty == NbtValueType::End {
+        let ty = NbtTagType::from_id(type_id).ok_or_else(|| ())?;
+        if ty == NbtTagType::End {
             // Finish early - nothing more to read
             println!("Terminating compound");
             break;
@@ -279,7 +279,7 @@ fn parse_list(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagList, ()
     // Type of values contained in the list
     let ty = {
         let id = cursor.read_u8().map_err(|_| ())?;
-        NbtValueType::from_id(id).ok_or_else(|| ())?
+        NbtTagType::from_id(id).ok_or_else(|| ())?
     };
 
     // Length of list, in number of values (not bytes)
@@ -298,34 +298,34 @@ fn parse_list(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagList, ()
     Ok(NbtTagList::new(name, ty, values))
 }
 
-fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Result<NbtValue, ()> {
+fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtTagType, name: String) -> Result<NbtTag, ()> {
     Ok(match ty {
-        NbtValueType::End => unreachable!(), // Should already be covered
-        NbtValueType::Byte => {
+        NbtTagType::End => unreachable!(), // Should already be covered
+        NbtTagType::Byte => {
             let x = cursor.read_i8().map_err(|_| ())?;
-            NbtValue::Byte(NbtTagByte::new(name.clone(), x))
+            NbtTag::Byte(NbtTagByte::new(name.clone(), x))
         }
-        NbtValueType::Short => {
+        NbtTagType::Short => {
             let x = cursor.read_i16::<BigEndian>().map_err(|_| ())?;
-            NbtValue::Short(NbtTagShort::new(name.clone(), x))
+            NbtTag::Short(NbtTagShort::new(name.clone(), x))
         }
-        NbtValueType::Int => {
+        NbtTagType::Int => {
             let x = cursor.read_i32::<BigEndian>().map_err(|_| ())?;
-            NbtValue::Int(NbtTagInt::new(name.clone(), x))
+            NbtTag::Int(NbtTagInt::new(name.clone(), x))
         }
-        NbtValueType::Long => {
+        NbtTagType::Long => {
             let x = cursor.read_i64::<BigEndian>().map_err(|_| ())?;
-            NbtValue::Long(NbtTagLong::new(name.clone(), x))
+            NbtTag::Long(NbtTagLong::new(name.clone(), x))
         }
-        NbtValueType::Float => {
+        NbtTagType::Float => {
             let x = cursor.read_f32::<BigEndian>().map_err(|_| ())?;
-            NbtValue::Float(NbtTagFloat::new(name.clone(), x))
+            NbtTag::Float(NbtTagFloat::new(name.clone(), x))
         }
-        NbtValueType::Double => {
+        NbtTagType::Double => {
             let x = cursor.read_f64::<BigEndian>().map_err(|_| ())?;
-            NbtValue::Double(NbtTagDouble::new(name.clone(), x))
+            NbtTag::Double(NbtTagDouble::new(name.clone(), x))
         }
-        NbtValueType::ByteArray => {
+        NbtTagType::ByteArray => {
             let len = cursor.read_i32::<BigEndian>().map_err(|_| ())?;
             if len > 65536 {
                 // Yeah... no.
@@ -338,9 +338,9 @@ fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Re
                 buf.push(x);
             }
 
-            NbtValue::ByteArray(NbtTagByteArray::new(name.clone(), buf))
+            NbtTag::ByteArray(NbtTagByteArray::new(name.clone(), buf))
         }
-        NbtValueType::String => {
+        NbtTagType::String => {
             let len = cursor.read_u16::<BigEndian>().map_err(|_| ())?;
             let mut buf = String::with_capacity(len as usize);
 
@@ -349,17 +349,17 @@ fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Re
                 buf.push(ch as char);
             }
 
-            NbtValue::String(NbtTagString::new(name.clone(), buf))
+            NbtTag::String(NbtTagString::new(name.clone(), buf))
         }
-        NbtValueType::List => {
+        NbtTagType::List => {
             let list = parse_list(cursor, name)?;
-            NbtValue::List(list)
+            NbtTag::List(list)
         }
-        NbtValueType::Compound => {
+        NbtTagType::Compound => {
             let compound = parse_compound(cursor, name)?;
-            NbtValue::Compound(compound)
+            NbtTag::Compound(compound)
         }
-        NbtValueType::IntArray => {
+        NbtTagType::IntArray => {
             let len = cursor.read_i32::<BigEndian>().map_err(|_| ())?;
             if len > 65536 {
                 return Err(());
@@ -371,9 +371,9 @@ fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Re
                 buf.push(x);
             }
 
-            NbtValue::IntArray(NbtTagIntArray::new(name.clone(), buf))
+            NbtTag::IntArray(NbtTagIntArray::new(name.clone(), buf))
         }
-        NbtValueType::LongArray => {
+        NbtTagType::LongArray => {
             let len = cursor.read_i32::<BigEndian>().map_err(|_| ())?;
             if len > 65536 {
                 return Err(());
@@ -385,13 +385,13 @@ fn parse_value(cursor: &mut Cursor<&[u8]>, ty: NbtValueType, name: String) -> Re
                 buf.push(x);
             }
 
-            NbtValue::LongArray(NbtTagLongArray::new(name.clone(), buf))
+            NbtTag::LongArray(NbtTagLongArray::new(name.clone(), buf))
         }
     })
 }
 
 pub fn write(buf: &mut Vec<u8>, compound: &NbtTagCompound) {
-    write_tag_type(buf, NbtValueType::Compound);
+    write_tag_type(buf, NbtTagType::Compound);
     write_tag_name(buf, &compound.name);
     write_compound(buf, compound);
 }
@@ -402,49 +402,49 @@ fn write_compound(buf: &mut Vec<u8>, compound: &NbtTagCompound) {
     }
 }
 
-fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
+fn write_value(buf: &mut Vec<u8>, value: &NbtTag, write_name: bool) {
     let ty = value.ty();
     write_tag_type(buf, ty);
 
     match value {
-        NbtValue::End => (),
-        NbtValue::Byte(val) => {
+        NbtTag::End => (),
+        NbtTag::Byte(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
             buf.write_i8(val.value).unwrap();
         }
-        NbtValue::Short(val) => {
+        NbtTag::Short(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
             buf.write_i16::<BigEndian>(val.value).unwrap();
         }
-        NbtValue::Int(val) => {
+        NbtTag::Int(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
             buf.write_i32::<BigEndian>(val.value).unwrap();
         }
-        NbtValue::Long(val) => {
+        NbtTag::Long(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
             buf.write_i64::<BigEndian>(val.value).unwrap();
         }
-        NbtValue::Float(val) => {
+        NbtTag::Float(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
             buf.write_f32::<BigEndian>(val.value).unwrap();
         }
-        NbtValue::Double(val) => {
+        NbtTag::Double(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
             buf.write_f64::<BigEndian>(val.value).unwrap();
         }
-        NbtValue::ByteArray(val) => {
+        NbtTag::ByteArray(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
@@ -456,7 +456,7 @@ fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
                 buf.write_i8(*x).unwrap();
             }
         }
-        NbtValue::String(val) => {
+        NbtTag::String(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
@@ -464,7 +464,7 @@ fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
             buf.write_u16::<BigEndian>(val.value.len() as u16).unwrap();
             buf.write(val.value.as_bytes()).unwrap();
         }
-        NbtValue::List(val) => {
+        NbtTag::List(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
@@ -477,14 +477,14 @@ fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
                 write_value(buf, val, false);
             }
         }
-        NbtValue::Compound(val) => {
+        NbtTag::Compound(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
 
             write_compound(buf, val);
         }
-        NbtValue::IntArray(val) => {
+        NbtTag::IntArray(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
@@ -497,7 +497,7 @@ fn write_value(buf: &mut Vec<u8>, value: &NbtValue, write_name: bool) {
                 buf.write_i32::<BigEndian>(*x).unwrap();
             }
         }
-        NbtValue::LongArray(val) => {
+        NbtTag::LongArray(val) => {
             if write_name {
                 write_tag_name(buf, &val.name);
             }
@@ -518,7 +518,7 @@ fn write_tag_name(buf: &mut Vec<u8>, s: &str) {
     buf.write(s.as_bytes()).unwrap();
 }
 
-fn write_tag_type(buf: &mut Vec<u8>, ty: NbtValueType) {
+fn write_tag_type(buf: &mut Vec<u8>, ty: NbtTagType) {
     buf.write_u8(ty.id()).unwrap();
 }
 
@@ -573,14 +573,14 @@ pub struct NbtTagString {
 #[derive(Clone, Debug, new, Default)]
 pub struct NbtTagList {
     pub name: String,
-    pub ty: NbtValueType,
-    pub values: Vec<NbtValue>,
+    pub ty: NbtTagType,
+    pub values: Vec<NbtTag>,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct NbtTagCompound {
     pub name: String,
-    values: HashMap<String, NbtValue>,
+    values: HashMap<String, NbtTag>,
 }
 
 impl NbtTagCompound {
@@ -591,11 +591,11 @@ impl NbtTagCompound {
         }
     }
 
-    pub fn get(&self, name: &str) -> Option<NbtValue> {
+    pub fn get(&self, name: &str) -> Option<NbtTag> {
         self.values.get(name).cloned()
     }
 
-    pub fn set(&mut self, name: &str, value: NbtValue) {
+    pub fn set(&mut self, name: &str, value: NbtTag) {
         self.values.insert(name.to_string(), value);
     }
 }
