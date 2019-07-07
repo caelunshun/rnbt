@@ -110,97 +110,97 @@ impl NbtValue {
         }
     }
 
-    pub fn byte(&self) -> Option<&NbtTagByte> {
+    pub fn byte(&self) -> Option<NbtTagByte> {
         if let NbtValue::Byte(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn short(&self) -> Option<&NbtTagShort> {
+    pub fn short(&self) -> Option<NbtTagShort> {
         if let NbtValue::Short(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn int(&self) -> Option<&NbtTagInt> {
+    pub fn int(&self) -> Option<NbtTagInt> {
         if let NbtValue::Int(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn long(&self) -> Option<&NbtTagLong> {
+    pub fn long(&self) -> Option<NbtTagLong> {
         if let NbtValue::Long(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn float(&self) -> Option<&NbtTagFloat> {
+    pub fn float(&self) -> Option<NbtTagFloat> {
         if let NbtValue::Float(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn double(&self) -> Option<&NbtTagDouble> {
+    pub fn double(&self) -> Option<NbtTagDouble> {
         if let NbtValue::Double(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn byte_array(&self) -> Option<&NbtTagByteArray> {
+    pub fn byte_array(&self) -> Option<NbtTagByteArray> {
         if let NbtValue::ByteArray(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn string(&self) -> Option<&NbtTagString> {
+    pub fn string(&self) -> Option<NbtTagString> {
         if let NbtValue::String(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn list(&self) -> Option<&NbtTagList> {
+    pub fn list(&self) -> Option<NbtTagList> {
         if let NbtValue::List(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn compound(&self) -> Option<&NbtTagCompound> {
+    pub fn compound(&self) -> Option<NbtTagCompound> {
         if let NbtValue::Compound(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn int_array(&self) -> Option<&NbtTagIntArray> {
+    pub fn int_array(&self) -> Option<NbtTagIntArray> {
         if let NbtValue::IntArray(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
     }
 
-    pub fn long_array(&self) -> Option<&NbtTagLongArray> {
+    pub fn long_array(&self) -> Option<NbtTagLongArray> {
         if let NbtValue::LongArray(x) = self {
-            Some(x)
+            Some(x.clone())
         } else {
             None
         }
@@ -235,7 +235,7 @@ pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtValue, ()> {
 }
 
 fn parse_compound(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagCompound, ()> {
-    let mut compound = NbtTagCompound::new(name, HashMap::new());
+    let mut compound = NbtTagCompound::new(name.as_str());
 
     println!("Reading compound {}", compound.name);
 
@@ -577,15 +577,26 @@ pub struct NbtTagList {
     pub values: Vec<NbtValue>,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct NbtTagCompound {
     pub name: String,
-    pub values: HashMap<String, NbtValue>,
+    values: HashMap<String, NbtValue>,
 }
 
 impl NbtTagCompound {
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            values: HashMap::new(),
+        }
+    }
+
     pub fn get(&self, name: &str) -> Option<NbtValue> {
         self.values.get(name).cloned()
+    }
+
+    pub fn set(&mut self, name: &str, value: NbtValue) {
+        self.values.insert(name.to_string(), value);
     }
 }
 
