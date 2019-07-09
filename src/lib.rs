@@ -237,17 +237,13 @@ pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtTag, ()> {
 fn parse_compound(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagCompound, ()> {
     let mut compound = NbtTagCompound::new(name.as_str());
 
-    println!("Reading compound {}", compound.name);
-
     // Read values until NBT_End is reached
     loop {
         let type_id = cursor.read_u8().map_err(|_| ())?;
-        println!("111");
 
         let ty = NbtTagType::from_id(type_id).ok_or_else(|| ())?;
         if ty == NbtTagType::End {
             // Finish early - nothing more to read
-            println!("Terminating compound");
             break;
         }
 
@@ -262,12 +258,9 @@ fn parse_compound(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagComp
 
             name
         };
-        println!("Reading tag with type {:?} and name {}", ty, name);
 
         // Read value
         let value = parse_value(cursor, ty, name.clone())?;
-
-        println!("136");
 
         compound.values.insert(name, value);
     }
