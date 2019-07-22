@@ -1,6 +1,7 @@
 //! Tests the library using the `bigtest.nbt` file provided
 //! by Mojang.
 use flate2::read::GzDecoder;
+use rnbt::{NbtTagCompound, NbtTagInt};
 use std::io::prelude::*;
 use std::path::PathBuf;
 

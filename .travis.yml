@@ -10,4 +10,4 @@ env:
 
 script:
   - which cargo-make || cargo install --debug cargo-make
-  - cargo make ci-flow
+  - cargo make --no-workspace workspace-ci-flow
