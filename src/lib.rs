@@ -4,11 +4,24 @@ use std::io::Cursor;
 use std::io::Write;
 use serde::Serialize;
 use serde_json::Value;
-
+// use pyo3::prelude::*;
+// use pyo3::wrap_pyfunction;
 
 #[macro_use]
 extern crate derive_new;
 
+
+// #[pymodule]
+// fn fast_nbt(py: Python, m: &PyModule) -> PyResult<()> {
+//     m.add_function(wrap_pyfunction!(read_from_binary_file, m)?)?;
+//     Ok(())
+// }
+
+// #[pyfunction]
+// fn read_from_binary_file() -> PyResult<String> {
+//     // Call your actual Rust function here and return the result.
+//     Ok("Hello from Rust!".to_string())
+// }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize)]
 pub enum NbtTagType {

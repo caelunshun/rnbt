@@ -13,6 +13,3 @@ pyo3 = { version = "0.20", features = ["extension-module"] }
 
 [dev-dependencies]
 flate2 = "1.0.9"
-
-[lib]
-crate-type = ["cdylib"]

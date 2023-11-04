@@ -5,6 +5,7 @@ use rnbt::{NbtTagCompound, NbtTagInt};
 use std::io::prelude::*;
 use std::path::PathBuf;
 
+
 #[test]
 fn bigtest() {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
