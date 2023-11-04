@@ -31,19 +31,26 @@ fn bigtest() {
     // Confirm that values are correct
     let c = root.compound().unwrap();
 
-    assert_eq!(c.get("intTest").unwrap().int().unwrap().value, 2147483647);
-    assert_eq!(c.get("byteTest").unwrap().byte().unwrap().value, 127);
+    //write the contents to a json file
+    c.to_json("tests/outputs/output.json").unwrap();
+
+    //read the content from a json file and populate the NbtTagCompound
+    let c_json = NbtTagCompound::from_json("tests/outputs/output.json").unwrap();
+
+    //assert the content of the new NbtTagCompound read from the json file
+    assert_eq!(c_json.get("intTest").unwrap().int().unwrap().value, 2147483647);
+    assert_eq!(c_json.get("byteTest").unwrap().byte().unwrap().value, 127);
     assert_eq!(
         c.get("doubleTest").unwrap().double().unwrap().value,
         0.49312871321823148
     );
     assert_eq!(
-        c.get("floatTest").unwrap().float().unwrap().value,
+        c_json.get("floatTest").unwrap().float().unwrap().value,
         0.49823147058486938
     );
     assert_eq!(
-        c.get("longTest").unwrap().long().unwrap().value,
+        c_json.get("longTest").unwrap().long().unwrap().value,
         9223372036854775807
     );
-    assert_eq!(c.get("shortTest").unwrap().short().unwrap().value, 32767);
+    assert_eq!(c_json.get("shortTest").unwrap().short().unwrap().value, 32767);
 }

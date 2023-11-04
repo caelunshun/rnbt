@@ -1,12 +1,6 @@
 {
   "name": "Level",
   "values": {
-    "shortTest": {
-      "Short": {
-        "name": "shortTest",
-        "value": 32767
-      }
-    },
     "listTest (long)": {
       "List": {
         "name": "listTest (long)",
@@ -45,6 +39,81 @@
         ]
       }
     },
+    "longTest": {
+      "Long": {
+        "name": "longTest",
+        "value": 9223372036854775807
+      }
+    },
+    "byteTest": {
+      "Byte": {
+        "name": "byteTest",
+        "value": 127
+      }
+    },
+    "intTest": {
+      "Int": {
+        "name": "intTest",
+        "value": 2147483647
+      }
+    },
+    "stringTest": {
+      "String": {
+        "name": "stringTest",
+        "value": "HELLO WORLD THIS IS A TEST STRING ÃÃÃ!"
+      }
+    },
+    "nested compound test": {
+      "Compound": {
+        "name": "nested compound test",
+        "values": {
+          "ham": {
+            "Compound": {
+              "name": "ham",
+              "values": {
+                "name": {
+                  "String": {
+                    "name": "name",
+                    "value": "Hampus"
+                  }
+                },
+                "value": {
+                  "Float": {
+                    "name": "value",
+                    "value": 0.75
+                  }
+                }
+              }
+            }
+          },
+          "egg": {
+            "Compound": {
+              "name": "egg",
+              "values": {
+                "name": {
+                  "String": {
+                    "name": "name",
+                    "value": "Eggbert"
+                  }
+                },
+                "value": {
+                  "Float": {
+                    "name": "value",
+                    "value": 0.5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "shortTest": {
+      "Short": {
+        "name": "shortTest",
+        "value": 32767
+      }
+    },
     "listTest (compound)": {
       "List": {
         "name": "listTest (compound)",
@@ -54,16 +123,16 @@
             "Compound": {
               "name": "",
               "values": {
-                "created-on": {
-                  "Long": {
-                    "name": "created-on",
-                    "value": 1264099775885
-                  }
-                },
                 "name": {
                   "String": {
                     "name": "name",
                     "value": "Compound tag #0"
+                  }
+                },
+                "created-on": {
+                  "Long": {
+                    "name": "created-on",
+                    "value": 1264099775885
                   }
                 }
               }
@@ -89,30 +158,6 @@
             }
           }
         ]
-      }
-    },
-    "intTest": {
-      "Int": {
-        "name": "intTest",
-        "value": 2147483647
-      }
-    },
-    "byteTest": {
-      "Byte": {
-        "name": "byteTest",
-        "value": 127
-      }
-    },
-    "longTest": {
-      "Long": {
-        "name": "longTest",
-        "value": 9223372036854775807
-      }
-    },
-    "stringTest": {
-      "String": {
-        "name": "stringTest",
-        "value": "HELLO WORLD THIS IS A TEST STRING ÃÃÃ!"
       }
     },
     "byteArrayTest (the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...))": {
@@ -1120,51 +1165,6 @@
           6,
           48
         ]
-      }
-    },
-    "nested compound test": {
-      "Compound": {
-        "name": "nested compound test",
-        "values": {
-          "ham": {
-            "Compound": {
-              "name": "ham",
-              "values": {
-                "name": {
-                  "String": {
-                    "name": "name",
-                    "value": "Hampus"
-                  }
-                },
-                "value": {
-                  "Float": {
-                    "name": "value",
-                    "value": 0.75
-                  }
-                }
-              }
-            }
-          },
-          "egg": {
-            "Compound": {
-              "name": "egg",
-              "values": {
-                "value": {
-                  "Float": {
-                    "name": "value",
-                    "value": 0.5
-                  }
-                },
-                "name": {
-                  "String": {
-                    "name": "name",
-                    "value": "Eggbert"
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     },
     "doubleTest": {
