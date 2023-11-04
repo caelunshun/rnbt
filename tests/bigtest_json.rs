@@ -32,10 +32,10 @@ fn bigtest() {
     let c = root.compound().unwrap();
 
     //write the contents to a json file
-    c.to_json("tests/outputs/output.json").unwrap();
+    c.to_json("tests/outputs/output_bt.json").unwrap();
 
     //read the content from a json file and populate the NbtTagCompound
-    let c_json = NbtTagCompound::from_json("tests/outputs/output.json").unwrap();
+    let c_json = NbtTagCompound::from_json("tests/outputs/output_bt.json").unwrap();
 
     //assert the content of the new NbtTagCompound read from the json file
     assert_eq!(c_json.get("intTest").unwrap().int().unwrap().value, 2147483647);

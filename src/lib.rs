@@ -1,12 +1,11 @@
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
-use serde::Deserialize;
 use std::collections::HashMap;
 use std::io::Cursor;
 use std::io::Write;
 use serde::Serialize;
-
+use serde::Deserialize;
 use std::fs;
-use std::io::{self, BufWriter};
+use std::io::{self, BufWriter, BufReader};
 
 // use pyo3::prelude::*;
 // use pyo3::wrap_pyfunction;
@@ -626,11 +625,12 @@ impl NbtTagCompound {
     }
 
     pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
-        // Read the file to a string.
-        let file_contents = fs::read_to_string(path)?;
 
-        // Parse the string as JSON into the data structure.
-        let deserialized_nbt = serde_json::from_str(&file_contents)?;
+        let file = fs::File::open(path)?;
+        let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
+
+        // Deserialize the JSON data directly from the stream.
+        let deserialized_nbt = serde_json::from_reader(reader)?;
         
         Ok(deserialized_nbt)
     }
