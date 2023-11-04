@@ -2,11 +2,15 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::collections::HashMap;
 use std::io::Cursor;
 use std::io::Write;
+use serde::Serialize;
+use serde_json::Value;
+
 
 #[macro_use]
 extern crate derive_new;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize)]
 pub enum NbtTagType {
     End,
     Byte,
@@ -68,7 +72,7 @@ impl NbtTagType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub enum NbtTag {
     End,
     Byte(NbtTagByte),
@@ -203,6 +207,16 @@ impl NbtTag {
             Some(x.clone())
         } else {
             None
+        }
+    }
+
+    pub fn to_json(&self) -> String {
+        match serde_json::to_string(self) {
+            Ok(json) => json,
+            Err(e) => {
+                eprintln!("Failed to serialize to JSON: {}", e);
+                String::from("{}")  // Return an empty JSON object or any other default value.
+            }
         }
     }
 }
@@ -515,62 +529,62 @@ fn write_tag_type(buf: &mut Vec<u8>, ty: NbtTagType) {
     buf.write_u8(ty.id()).unwrap();
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagByte {
     pub name: String,
     pub value: i8,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagShort {
     pub name: String,
     pub value: i16,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagInt {
     pub name: String,
     pub value: i32,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagLong {
     pub name: String,
     pub value: i64,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagFloat {
     pub name: String,
     pub value: f32,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagDouble {
     pub name: String,
     pub value: f64,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagByteArray {
     pub name: String,
     pub values: Vec<i8>,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagString {
     pub name: String,
     pub value: String,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagList {
     pub name: String,
     pub ty: NbtTagType,
     pub values: Vec<NbtTag>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct NbtTagCompound {
     pub name: String,
     pub values: HashMap<String, NbtTag>,
@@ -593,13 +607,13 @@ impl NbtTagCompound {
     }
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagIntArray {
     pub name: String,
     pub values: Vec<i32>,
 }
 
-#[derive(Clone, Debug, new, Default)]
+#[derive(Clone, Debug, new, Default, Serialize)]
 pub struct NbtTagLongArray {
     pub name: String,
     pub values: Vec<i64>,
