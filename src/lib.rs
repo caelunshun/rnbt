@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use std::io::Cursor;
 use std::io::Write;
 use serde::Serialize;
-use serde_json::Value;
+
+use std::fs::File;
+use std::io::{self, BufWriter};
+
 // use pyo3::prelude::*;
 // use pyo3::wrap_pyfunction;
 
@@ -223,15 +226,6 @@ impl NbtTag {
         }
     }
 
-    pub fn to_json(&self) -> String {
-        match serde_json::to_string(self) {
-            Ok(json) => json,
-            Err(e) => {
-                eprintln!("Failed to serialize to JSON: {}", e);
-                String::from("{}")  // Return an empty JSON object or any other default value.
-            }
-        }
-    }
 }
 
 pub fn parse_bytes(bytes: &[u8]) -> Result<NbtTag, ()> {
@@ -617,6 +611,17 @@ impl NbtTagCompound {
 
     pub fn set(&mut self, name: &str, value: NbtTag) {
         self.values.insert(name.to_string(), value);
+    }
+
+    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+        // Open a file for writing.
+        let file = File::create(path)?;
+        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
+
+        // Write the pretty-printed JSON to the file.
+        serde_json::to_writer_pretty(writer, &self)?;
+        
+        Ok(())
     }
 }
 

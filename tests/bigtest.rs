@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 
 
+
 #[test]
 fn bigtest() {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -29,6 +30,8 @@ fn bigtest() {
 
     // Confirm that values are correct
     let c = root.compound().unwrap();
+
+    c.to_json("tests/outputs/output.json");
 
     assert_eq!(c.get("intTest").unwrap().int().unwrap().value, 2147483647);
     assert_eq!(c.get("byteTest").unwrap().byte().unwrap().value, 127);
