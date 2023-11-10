@@ -1,6 +1,6 @@
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{BigEndian, WriteBytesExt};
 use std::collections::HashMap;
-use std::io::Cursor;
+
 use std::io::Write;
 use serde::Serialize;
 use serde::Deserialize;
