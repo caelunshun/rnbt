@@ -8,6 +8,7 @@ use serde::Deserialize;
 use std::fs;
 use std::io::{self, BufWriter, BufReader};
 use flate2::read::GzDecoder;
+use std::path::PathBuf;
 
 // use pyo3::prelude::*;
 // use pyo3::wrap_pyfunction;
@@ -597,23 +598,23 @@ pub struct NbtTagList {
 
 #[derive(Clone, Debug, Default)]
 pub struct McWorldDescriptor {
-    pub input_path: String,
+    pub input_path: PathBuf,
     pub version: String,
     pub raw_data: NbtTagCompound,
 }
 
 impl McWorldDescriptor {
-    pub fn new(input_path: &str) -> std::io::Result<Self> {
-        let raw_data = Self::read_from_binary_file(input_path)?;
+    pub fn new(input_path: PathBuf) -> std::io::Result<Self> {
+        let raw_data = Self::read_from_binary_file(&input_path)?;
 
         Ok(McWorldDescriptor {
-            input_path: input_path.to_string(),
+            input_path,
             version: "0.0.0".to_string(),
             raw_data,
         })
     }
 
-    pub fn read_from_binary_file(input_path: &str) -> std::io::Result<NbtTagCompound> {
+    pub fn read_from_binary_file(input_path: &PathBuf) -> std::io::Result<NbtTagCompound> {
         
         // Open the file and create a buffered reader for efficient reading
         let file = fs::File::open(&input_path)?;

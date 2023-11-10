@@ -12,24 +12,7 @@ fn bigtest() {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("tests/resources/bigtest.nbt");
 
-    let mut mc_world = McWorldDescriptor::new(path.to_str().unwrap());
-
-
-    // let uncompressed_buf = std::fs::read(&path).unwrap();
-    // let mut decoder = GzDecoder::new(uncompressed_buf.as_slice());
-
-    // let mut buf = vec![];
-    // let mut temp = [0u8; 16];
-    // while let Ok(amnt) = decoder.read(&mut temp) {
-    //     if amnt == 0 {
-    //         break;
-    //     }
-
-    //     buf.extend_from_slice(&temp[..amnt]);
-    // }
-
-    // Parse NBT
-    //let root = rnbt::parse_bytes(&buf).unwrap();
+    let mc_world = McWorldDescriptor::new(path.to_str().unwrap());
 
     // Confirm that values are correct
     let c = mc_world.unwrap().raw_data;
