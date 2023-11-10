@@ -1,18 +1,14 @@
 //! Tests the library using the `bigtest.nbt` file provided
 //! by Mojang.
-use flate2::read::GzDecoder;
-use rnbt::{McWorldDescriptor,NbtTagCompound, NbtTagInt};
-use std::io::prelude::*;
+use rnbt::McWorldDescriptor;
 use std::path::PathBuf;
-
-
 
 #[test]
 fn bigtest() {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("tests/resources/bigtest.nbt");
 
-    let mc_world = McWorldDescriptor::new(path.to_str().unwrap());
+    let mc_world = McWorldDescriptor::new(path);
 
     // Confirm that values are correct
     let c = mc_world.unwrap().raw_data;
