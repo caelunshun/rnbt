@@ -2,10 +2,12 @@ use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::collections::HashMap;
 use std::io::Cursor;
 use std::io::Write;
+use std::io::Read;
 use serde::Serialize;
 use serde::Deserialize;
 use std::fs;
 use std::io::{self, BufWriter, BufReader};
+use flate2::read::GzDecoder;
 
 // use pyo3::prelude::*;
 // use pyo3::wrap_pyfunction;
@@ -25,6 +27,8 @@ extern crate derive_new;
 //     // Call your actual Rust function here and return the result.
 //     Ok("Hello from Rust!".to_string())
 // }
+
+
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum NbtTagType {
@@ -590,6 +594,44 @@ pub struct NbtTagList {
     pub ty: NbtTagType,
     pub values: Vec<NbtTag>,
 }
+
+#[derive(Clone, Debug, Default)]
+pub struct McWorldDescriptor {
+    pub input_path: String,
+    pub version: String,
+    pub raw_data: NbtTagCompound,
+}
+
+impl McWorldDescriptor {
+    pub fn new(input_path: &str) -> std::io::Result<Self> {
+        let raw_data = Self::read_from_binary_file(input_path)?;
+
+        Ok(McWorldDescriptor {
+            input_path: input_path.to_string(),
+            version: "0.0.0".to_string(),
+            raw_data,
+        })
+    }
+
+    pub fn read_from_binary_file(input_path: &str) -> std::io::Result<NbtTagCompound> {
+        
+        // Open the file and create a buffered reader for efficient reading
+        let file = fs::File::open(&input_path)?;
+        let decoder = GzDecoder::new(file);
+        let mut reader = BufReader::new(decoder);
+
+        // Read the entire contents into a buffer
+        let mut buf = Vec::new();
+        reader.read_to_end(&mut buf)?;
+
+        // Parse NBT #TODO: remove unwrap and handle possible errors
+        let root = parse_bytes(&buf).unwrap();
+
+        Ok(root.compound().unwrap())
+    }
+
+}
+
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagCompound {

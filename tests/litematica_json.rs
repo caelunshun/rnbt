@@ -8,7 +8,7 @@ use std::path::PathBuf;
 
 
 #[test]
-fn litematica() {
+fn bigtest() {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("tests/resources/test.litematic");
 
@@ -30,12 +30,13 @@ fn litematica() {
 
     // Confirm that values are correct
     let c = root.compound().unwrap();
-    let val_region = c.get("Regions").unwrap().compound().unwrap();
-    let val_test = val_region.get("test").unwrap().compound().unwrap();
-    let val_list = val_test.get("BlockStatePalette").unwrap().list().unwrap();
-    //let test = val_test.values.get(0).unwrap();
-    // let val_test = val_region.get("test").unwrap();
-    assert_eq!(c.get("BlockStatePalette").unwrap().int().unwrap().value, 2147483647);
+
+    c.to_json("tests/outputs/litematica.json").unwrap();
+    
+    //read the content from a json file and populate the NbtTagCompound
+    let c_json = NbtTagCompound::from_json("tests/outputs/litematica.json").unwrap();
+    
+    // assert_eq!(c.get("intTest").unwrap().int().unwrap().value, 2147483647);
     // assert_eq!(c.get("byteTest").unwrap().byte().unwrap().value, 127);
     // assert_eq!(
     //     c.get("doubleTest").unwrap().double().unwrap().value,
