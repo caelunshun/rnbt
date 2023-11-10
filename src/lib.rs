@@ -4,8 +4,8 @@ use flate2::read::GzDecoder;
 use std::path::PathBuf;
 use std::io::BufReader;
 
-
 pub mod nbt_tag;
+pub mod file_parser;
 
 #[derive(Clone, Debug, Default)]
 pub struct McWorldDescriptor {
@@ -37,7 +37,7 @@ impl McWorldDescriptor {
         reader.read_to_end(&mut buf)?;
 
         // Parse NBT #TODO: remove unwrap and handle possible errors
-        let root = nbt_tag::parse_bytes(&buf).unwrap();
+        let root = file_parser::parse_bytes(&buf).unwrap();
 
         Ok(root.compound().unwrap())
     }
