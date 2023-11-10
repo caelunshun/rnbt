@@ -1,41 +1,24 @@
 //! Tests the library using the `bigtest.nbt` file provided
 //! by Mojang.
-use flate2::read::GzDecoder;
-use rnbt::{NbtTagCompound, NbtTagInt};
-use std::io::prelude::*;
+use rnbt::McWorldDescriptor;
+use rnbt::nbt_tag;
 use std::path::PathBuf;
 
-
-
 #[test]
-fn bigtest() {
+fn bigtest_json() {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("tests/resources/bigtest.nbt");
 
-    let uncompressed_buf = std::fs::read(&path).unwrap();
-    let mut decoder = GzDecoder::new(uncompressed_buf.as_slice());
-
-    let mut buf = vec![];
-    let mut temp = [0u8; 16];
-    while let Ok(amnt) = decoder.read(&mut temp) {
-        if amnt == 0 {
-            break;
-        }
-
-        buf.extend_from_slice(&temp[..amnt]);
-    }
-
-    // Parse NBT
-    let root = rnbt::parse_bytes(&buf).unwrap();
+    let mc_world = McWorldDescriptor::new(path);
 
     // Confirm that values are correct
-    let c = root.compound().unwrap();
+    let c = mc_world.unwrap().raw_data;
 
     //write the contents to a json file
     c.to_json("tests/outputs/output_bt.json").unwrap();
 
     //read the content from a json file and populate the NbtTagCompound
-    let c_json = NbtTagCompound::from_json("tests/outputs/output_bt.json").unwrap();
+    let c_json = nbt_tag::NbtTagCompound::from_json("tests/outputs/output_bt.json").unwrap();
 
     //assert the content of the new NbtTagCompound read from the json file
     assert_eq!(c_json.get("intTest").unwrap().int().unwrap().value, 2147483647);

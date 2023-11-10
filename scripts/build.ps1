@@ -37,6 +37,9 @@ Write-Host "=========================="
 # Check if the build was successful
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Build completed successfully" -ForegroundColor Green
+    Write-Host "=========================="
+    Write-Host "Run integration tests"
+    cargo test
 } else {
     Write-Host "Build failed" -ForegroundColor Red
 }
