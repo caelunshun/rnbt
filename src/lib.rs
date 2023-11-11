@@ -1,8 +1,7 @@
-use std::io::Read;
 use std::fs;
-use flate2::read::GzDecoder;
+
 use std::path::PathBuf;
-use std::io::BufReader;
+
 
 pub mod nbt_tag;
 pub mod file_parser;
@@ -25,19 +24,11 @@ impl McWorldDescriptor {
         })
     }
 
-    pub fn read_from_binary_file(input_path: &PathBuf) -> std::io::Result<nbt_tag::NbtTagCompound> {
+    fn read_from_binary_file(input_path: &PathBuf) -> std::io::Result<nbt_tag::NbtTagCompound> {
         
-        // Open the file and create a buffered reader for efficient reading
-        let file = fs::File::open(&input_path)?;
-        let decoder = GzDecoder::new(file);
-        let mut reader = BufReader::new(decoder);
+        let bin_content = file_parser::FileParser::new(input_path, file_parser::ReadMode::EntireFile);
+        let root = bin_content.parse()?;
 
-        // Read the entire contents into a buffer
-        let mut buf = Vec::new();
-        reader.read_to_end(&mut buf)?;
-
-        // Parse NBT #TODO: remove unwrap and handle possible errors
-        let root = file_parser::parse_bytes(&buf).unwrap();
 
         Ok(root.compound().unwrap())
     }

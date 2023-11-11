@@ -9,34 +9,18 @@
             "Compound": {
               "name": "test",
               "values": {
-                "Size": {
-                  "Compound": {
-                    "name": "Size",
-                    "values": {
-                      "x": {
-                        "Int": {
-                          "name": "x",
-                          "value": -3
-                        }
-                      },
-                      "y": {
-                        "Int": {
-                          "name": "y",
-                          "value": 1
-                        }
-                      },
-                      "z": {
-                        "Int": {
-                          "name": "z",
-                          "value": -8
-                        }
-                      }
-                    }
+                "BlockStates": {
+                  "LongArray": {
+                    "name": "BlockStates",
+                    "values": [
+                      4837147474772623360,
+                      3416885093
+                    ]
                   }
                 },
-                "PendingBlockTicks": {
+                "PendingFluidTicks": {
                   "List": {
-                    "name": "PendingBlockTicks",
+                    "name": "PendingFluidTicks",
                     "ty": "End",
                     "values": []
                   }
@@ -48,50 +32,16 @@
                     "values": []
                   }
                 },
-                "PendingFluidTicks": {
+                "TileEntities": {
                   "List": {
-                    "name": "PendingFluidTicks",
+                    "name": "TileEntities",
                     "ty": "End",
                     "values": []
                   }
                 },
-                "BlockStates": {
-                  "LongArray": {
-                    "name": "BlockStates",
-                    "values": [
-                      4837147474772623360,
-                      3416885093
-                    ]
-                  }
-                },
-                "Position": {
-                  "Compound": {
-                    "name": "Position",
-                    "values": {
-                      "y": {
-                        "Int": {
-                          "name": "y",
-                          "value": 0
-                        }
-                      },
-                      "x": {
-                        "Int": {
-                          "name": "x",
-                          "value": 2
-                        }
-                      },
-                      "z": {
-                        "Int": {
-                          "name": "z",
-                          "value": 7
-                        }
-                      }
-                    }
-                  }
-                },
-                "TileEntities": {
+                "PendingBlockTicks": {
                   "List": {
-                    "name": "TileEntities",
+                    "name": "PendingBlockTicks",
                     "ty": "End",
                     "values": []
                   }
@@ -118,6 +68,44 @@
                         "Compound": {
                           "name": "",
                           "values": {
+                            "Name": {
+                              "String": {
+                                "name": "Name",
+                                "value": "minecraft:polished_blackstone_button"
+                              }
+                            },
+                            "Properties": {
+                              "Compound": {
+                                "name": "Properties",
+                                "values": {
+                                  "facing": {
+                                    "String": {
+                                      "name": "facing",
+                                      "value": "west"
+                                    }
+                                  },
+                                  "powered": {
+                                    "String": {
+                                      "name": "powered",
+                                      "value": "false"
+                                    }
+                                  },
+                                  "face": {
+                                    "String": {
+                                      "name": "face",
+                                      "value": "floor"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "Compound": {
+                          "name": "",
+                          "values": {
                             "Properties": {
                               "Compound": {
                                 "name": "Properties",
@@ -132,44 +120,6 @@
                                     "String": {
                                       "name": "powered",
                                       "value": "false"
-                                    }
-                                  },
-                                  "facing": {
-                                    "String": {
-                                      "name": "facing",
-                                      "value": "west"
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            "Name": {
-                              "String": {
-                                "name": "Name",
-                                "value": "minecraft:polished_blackstone_button"
-                              }
-                            }
-                          }
-                        }
-                      },
-                      {
-                        "Compound": {
-                          "name": "",
-                          "values": {
-                            "Name": {
-                              "String": {
-                                "name": "Name",
-                                "value": "minecraft:polished_blackstone_button"
-                              }
-                            },
-                            "Properties": {
-                              "Compound": {
-                                "name": "Properties",
-                                "values": {
-                                  "face": {
-                                    "String": {
-                                      "name": "face",
-                                      "value": "floor"
                                     }
                                   },
                                   "facing": {
@@ -177,44 +127,6 @@
                                       "name": "facing",
                                       "value": "north"
                                     }
-                                  },
-                                  "powered": {
-                                    "String": {
-                                      "name": "powered",
-                                      "value": "false"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      },
-                      {
-                        "Compound": {
-                          "name": "",
-                          "values": {
-                            "Properties": {
-                              "Compound": {
-                                "name": "Properties",
-                                "values": {
-                                  "face": {
-                                    "String": {
-                                      "name": "face",
-                                      "value": "floor"
-                                    }
-                                  },
-                                  "powered": {
-                                    "String": {
-                                      "name": "powered",
-                                      "value": "false"
-                                    }
-                                  },
-                                  "facing": {
-                                    "String": {
-                                      "name": "facing",
-                                      "value": "east"
-                                    }
                                   }
                                 }
                               }
@@ -235,23 +147,49 @@
                             "Name": {
                               "String": {
                                 "name": "Name",
-                                "value": "minecraft:sandstone_wall"
+                                "value": "minecraft:polished_blackstone_button"
                               }
                             },
                             "Properties": {
                               "Compound": {
                                 "name": "Properties",
                                 "values": {
-                                  "east": {
+                                  "facing": {
                                     "String": {
-                                      "name": "east",
-                                      "value": "low"
+                                      "name": "facing",
+                                      "value": "east"
                                     }
                                   },
-                                  "south": {
+                                  "face": {
                                     "String": {
-                                      "name": "south",
-                                      "value": "low"
+                                      "name": "face",
+                                      "value": "floor"
+                                    }
+                                  },
+                                  "powered": {
+                                    "String": {
+                                      "name": "powered",
+                                      "value": "false"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "Compound": {
+                          "name": "",
+                          "values": {
+                            "Properties": {
+                              "Compound": {
+                                "name": "Properties",
+                                "values": {
+                                  "waterlogged": {
+                                    "String": {
+                                      "name": "waterlogged",
+                                      "value": "false"
                                     }
                                   },
                                   "north": {
@@ -260,16 +198,10 @@
                                       "value": "none"
                                     }
                                   },
-                                  "west": {
+                                  "south": {
                                     "String": {
-                                      "name": "west",
-                                      "value": "none"
-                                    }
-                                  },
-                                  "waterlogged": {
-                                    "String": {
-                                      "name": "waterlogged",
-                                      "value": "false"
+                                      "name": "south",
+                                      "value": "low"
                                     }
                                   },
                                   "up": {
@@ -277,8 +209,26 @@
                                       "name": "up",
                                       "value": "true"
                                     }
+                                  },
+                                  "east": {
+                                    "String": {
+                                      "name": "east",
+                                      "value": "low"
+                                    }
+                                  },
+                                  "west": {
+                                    "String": {
+                                      "name": "west",
+                                      "value": "none"
+                                    }
                                   }
                                 }
+                              }
+                            },
+                            "Name": {
+                              "String": {
+                                "name": "Name",
+                                "value": "minecraft:sandstone_wall"
                               }
                             }
                           }
@@ -305,15 +255,15 @@
                               "Compound": {
                                 "name": "Properties",
                                 "values": {
+                                  "east": {
+                                    "String": {
+                                      "name": "east",
+                                      "value": "none"
+                                    }
+                                  },
                                   "west": {
                                     "String": {
                                       "name": "west",
-                                      "value": "low"
-                                    }
-                                  },
-                                  "south": {
-                                    "String": {
-                                      "name": "south",
                                       "value": "low"
                                     }
                                   },
@@ -321,6 +271,12 @@
                                     "String": {
                                       "name": "waterlogged",
                                       "value": "false"
+                                    }
+                                  },
+                                  "south": {
+                                    "String": {
+                                      "name": "south",
+                                      "value": "low"
                                     }
                                   },
                                   "north": {
@@ -333,12 +289,6 @@
                                     "String": {
                                       "name": "up",
                                       "value": "true"
-                                    }
-                                  },
-                                  "east": {
-                                    "String": {
-                                      "name": "east",
-                                      "value": "none"
                                     }
                                   }
                                 }
@@ -357,22 +307,10 @@
                         "Compound": {
                           "name": "",
                           "values": {
-                            "Name": {
-                              "String": {
-                                "name": "Name",
-                                "value": "minecraft:brick_stairs"
-                              }
-                            },
                             "Properties": {
                               "Compound": {
                                 "name": "Properties",
                                 "values": {
-                                  "facing": {
-                                    "String": {
-                                      "name": "facing",
-                                      "value": "north"
-                                    }
-                                  },
                                   "half": {
                                     "String": {
                                       "name": "half",
@@ -390,8 +328,20 @@
                                       "name": "waterlogged",
                                       "value": "false"
                                     }
+                                  },
+                                  "facing": {
+                                    "String": {
+                                      "name": "facing",
+                                      "value": "north"
+                                    }
                                   }
                                 }
+                              }
+                            },
+                            "Name": {
+                              "String": {
+                                "name": "Name",
+                                "value": "minecraft:brick_stairs"
                               }
                             }
                           }
@@ -411,16 +361,16 @@
                                       "value": "false"
                                     }
                                   },
-                                  "half": {
-                                    "String": {
-                                      "name": "half",
-                                      "value": "bottom"
-                                    }
-                                  },
                                   "shape": {
                                     "String": {
                                       "name": "shape",
                                       "value": "straight"
+                                    }
+                                  },
+                                  "half": {
+                                    "String": {
+                                      "name": "half",
+                                      "value": "bottom"
                                     }
                                   },
                                   "facing": {
@@ -458,6 +408,12 @@
                         "Compound": {
                           "name": "",
                           "values": {
+                            "Name": {
+                              "String": {
+                                "name": "Name",
+                                "value": "minecraft:stripped_cherry_log"
+                              }
+                            },
                             "Properties": {
                               "Compound": {
                                 "name": "Properties",
@@ -469,12 +425,6 @@
                                     }
                                   }
                                 }
-                              }
-                            },
-                            "Name": {
-                              "String": {
-                                "name": "Name",
-                                "value": "minecraft:stripped_cherry_log"
                               }
                             }
                           }
@@ -510,12 +460,6 @@
                         "Compound": {
                           "name": "",
                           "values": {
-                            "Name": {
-                              "String": {
-                                "name": "Name",
-                                "value": "minecraft:stripped_cherry_log"
-                              }
-                            },
                             "Properties": {
                               "Compound": {
                                 "name": "Properties",
@@ -528,11 +472,67 @@
                                   }
                                 }
                               }
+                            },
+                            "Name": {
+                              "String": {
+                                "name": "Name",
+                                "value": "minecraft:stripped_cherry_log"
+                              }
                             }
                           }
                         }
                       }
                     ]
+                  }
+                },
+                "Position": {
+                  "Compound": {
+                    "name": "Position",
+                    "values": {
+                      "x": {
+                        "Int": {
+                          "name": "x",
+                          "value": 2
+                        }
+                      },
+                      "z": {
+                        "Int": {
+                          "name": "z",
+                          "value": 7
+                        }
+                      },
+                      "y": {
+                        "Int": {
+                          "name": "y",
+                          "value": 0
+                        }
+                      }
+                    }
+                  }
+                },
+                "Size": {
+                  "Compound": {
+                    "name": "Size",
+                    "values": {
+                      "x": {
+                        "Int": {
+                          "name": "x",
+                          "value": -3
+                        }
+                      },
+                      "y": {
+                        "Int": {
+                          "name": "y",
+                          "value": 1
+                        }
+                      },
+                      "z": {
+                        "Int": {
+                          "name": "z",
+                          "value": -8
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -541,20 +541,20 @@
         }
       }
     },
-    "SubVersion": {
+    "MinecraftDataVersion": {
       "Int": {
-        "name": "SubVersion",
-        "value": 1
+        "name": "MinecraftDataVersion",
+        "value": 3465
       }
     },
     "Metadata": {
       "Compound": {
         "name": "Metadata",
         "values": {
-          "RegionCount": {
+          "TotalBlocks": {
             "Int": {
-              "name": "RegionCount",
-              "value": 1
+              "name": "TotalBlocks",
+              "value": 12
             }
           },
           "EnclosingSize": {
@@ -582,28 +582,22 @@
               }
             }
           },
-          "Name": {
-            "String": {
-              "name": "Name",
-              "value": "test"
-            }
-          },
-          "TimeCreated": {
-            "Long": {
-              "name": "TimeCreated",
-              "value": 1699138242511
-            }
-          },
           "Author": {
             "String": {
               "name": "Author",
               "value": "mrmarkolinus2"
             }
           },
-          "TimeModified": {
-            "Long": {
-              "name": "TimeModified",
-              "value": 1699138242511
+          "Name": {
+            "String": {
+              "name": "Name",
+              "value": "test"
+            }
+          },
+          "RegionCount": {
+            "Int": {
+              "name": "RegionCount",
+              "value": 1
             }
           },
           "TotalVolume": {
@@ -612,16 +606,22 @@
               "value": 24
             }
           },
-          "TotalBlocks": {
-            "Int": {
-              "name": "TotalBlocks",
-              "value": 12
-            }
-          },
           "Description": {
             "String": {
               "name": "Description",
               "value": ""
+            }
+          },
+          "TimeCreated": {
+            "Long": {
+              "name": "TimeCreated",
+              "value": 1699138242511
+            }
+          },
+          "TimeModified": {
+            "Long": {
+              "name": "TimeModified",
+              "value": 1699138242511
             }
           }
         }
@@ -633,10 +633,10 @@
         "value": 6
       }
     },
-    "MinecraftDataVersion": {
+    "SubVersion": {
       "Int": {
-        "name": "MinecraftDataVersion",
-        "value": 3465
+        "name": "SubVersion",
+        "value": 1
       }
     }
   }

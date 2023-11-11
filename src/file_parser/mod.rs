@@ -2,14 +2,73 @@ use crate::nbt_tag::*;
 
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
+use std::path::PathBuf;
+use std::fs;
+use flate2::read::GzDecoder;
+use std::io::BufReader;
+use std::io::Read;
 
-
-pub fn parse_bytes(bytes: &[u8]) -> Result<NbtTag, ()> {
-    let mut cursor = Cursor::new(bytes);
-    parse(&mut cursor)
+pub enum ReadMode {
+    EntireFile,
+    Stream,
 }
 
-pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtTag, ()> {
+pub struct FileParser {
+    file_path: PathBuf,
+    read_mode: ReadMode,
+}
+
+impl FileParser {
+    pub fn new(file_path: &PathBuf, read_mode: ReadMode) -> Self {
+        FileParser { 
+            file_path: file_path.to_path_buf(), 
+            read_mode 
+        }
+
+    }
+
+    pub fn parse(&self) -> std::io::Result<NbtTag> {
+        let buf = match self.read_mode {
+            ReadMode::EntireFile => self.read_entire_file()?,
+            ReadMode::Stream => self.read_stream()?,
+        };
+
+        // Handle the result from parse_bytes
+        match parse_bytes(&buf) {
+            Ok(nbt_tag) => Ok(nbt_tag),  // On success, return the NbtTag
+            Err(_) => Err(std::io::Error::new(std::io::ErrorKind::Other, "Parse error")),  // On error, return an std::io::Error
+        }
+    }
+
+    fn read_entire_file(&self) -> std::io::Result<Vec<u8>> {
+        
+        // Open the file and create a buffered reader for efficient reading
+        let file = fs::File::open(&self.file_path)?;
+        let decoder = GzDecoder::new(file);
+        let mut reader = BufReader::new(decoder);
+
+        // Read the entire contents into a buffer
+        let mut buf = Vec::new();
+        reader.read_to_end(&mut buf)?;
+
+
+        Ok(buf)
+    }
+
+    fn read_stream(&self) -> std::io::Result<Vec<u8>> {
+        // Implementation for streaming read
+        // ...
+        //let mut buf = Vec::new();
+        //buf = "not implemented".as_bytes().to_vec();
+        todo!("not implemented yet");
+        //Ok(buf)
+    }
+}
+
+
+fn parse_bytes(bytes: &[u8]) -> Result<NbtTag, ()> {
+    let mut cursor = Cursor::new(bytes);
+  
     // Read root compound - read type first
     let ty = {
         let id = cursor.read_u8().map_err(|_| ())?;
@@ -26,7 +85,7 @@ pub fn parse(cursor: &mut Cursor<&[u8]>) -> Result<NbtTag, ()> {
         name.push(ch as char);
     }
 
-    let root = parse_compound(cursor, name)?;
+    let root = parse_compound(&mut cursor, name)?;
 
     Ok(NbtTag::Compound(root))
 }
