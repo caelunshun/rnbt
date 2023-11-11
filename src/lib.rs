@@ -1,5 +1,4 @@
 use std::fs;
-
 use std::path::PathBuf;
 
 
@@ -26,7 +25,7 @@ impl McWorldDescriptor {
 
     fn read_from_binary_file(input_path: &PathBuf) -> std::io::Result<nbt_tag::NbtTagCompound> {
         
-        let bin_content = file_parser::FileParser::new(input_path, file_parser::ReadMode::EntireFile);
+        let bin_content = file_parser::FileParser::new(input_path, file_parser::ReadMode::EntireFile, file_parser::FileType::Nbt);
         let root = bin_content.parse()?;
 
 
