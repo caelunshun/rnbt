@@ -8,7 +8,8 @@ use std::fs;
 use std::io::{self, BufWriter, BufReader};
 use derive_new::new;
 
-
+#[cfg(test)]
+mod tests;
 
 #[derive(Clone, Copy, new,  Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum NbtTagType {

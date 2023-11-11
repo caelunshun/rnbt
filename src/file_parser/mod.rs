@@ -8,6 +8,9 @@ use flate2::read::GzDecoder;
 use std::io::BufReader;
 use std::io::Read;
 
+#[cfg(test)]
+mod tests;
+
 pub enum ReadMode {
     EntireFile,
     Stream,
