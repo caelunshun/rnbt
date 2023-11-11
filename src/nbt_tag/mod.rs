@@ -11,6 +11,11 @@ use derive_new::new;
 #[cfg(test)]
 mod tests;
 
+/// Represents the type of an NBT (Named Binary Tag) tag.
+///
+/// NBT is a tag-based binary format used to store structured data.
+/// Each `NbtTagType` variant corresponds to a different data type
+/// in the NBT specification.
 #[derive(Clone, Copy, new,  Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum NbtTagType {
     End,
@@ -73,6 +78,10 @@ impl NbtTagType {
     }
 }
 
+/// Represents an NBT (Named Binary Tag) tag.
+///
+/// This enum encapsulates all possible NBT tags, each variant holding
+/// data corresponding to its type.
 #[derive(Clone, new, Debug, Serialize, Deserialize)]
 pub enum NbtTag {
     End,
