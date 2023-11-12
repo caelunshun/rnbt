@@ -5,12 +5,29 @@ use crate::nbt_tag::*;
 use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom};
 use flate2::read::ZlibDecoder;
+use flate2::read::GzDecoder;
 use std::path::PathBuf;
 
 const HEADER_LENGTH: usize = 4096;
 const CHUNK_HEADER_LENGTH: usize = 4;
 const CHUNK_HEADER_COMPRESSION: usize = CHUNK_HEADER_LENGTH + 1;
 
+pub enum CompressionType {
+    Uncompressed = 0,
+    Gzip = 1,
+    Zlib = 2,
+}
+
+impl CompressionType {
+    fn from_u8(value: u8) -> Option<Self> {
+        match value {
+            0 => Some(CompressionType::Uncompressed),
+            1 => Some(CompressionType::Gzip),
+            2 => Some(CompressionType::Zlib),
+            _ => None,
+        }
+    }
+}
 
 pub struct RegionFile {
     raw_data: Vec<u8>,
@@ -73,6 +90,14 @@ impl RegionFile {
     }
 
     /// Reads a chunk from the file based on the provided offset and size.
+    /// 
+    /// https://minecraft.fandom.com/wiki/Region_file_format
+    /// 
+    /// A Chunk is always represented as 4096 bytes.
+    /// The first 4 bytes (big endian) represent the actual length of the chunk.
+    /// The fifth byte is the compression method (usually zlib)
+    /// The rest x bytes (where x is the u32 of the first 4 bytes) are the actual chunk data, which is compressed.
+    /// 
     fn read_and_decompress_chunk(raw_data: &Vec<u8>, chunk_offsets: &Vec<(u32, u32)>,index: usize) -> io::Result<Vec<u8>> {
         if index < chunk_offsets.len() {
             let (offset, size) = chunk_offsets[index];
@@ -90,12 +115,30 @@ impl RegionFile {
                     let chunk_payload = &chunk_data[CHUNK_HEADER_COMPRESSION..CHUNK_HEADER_COMPRESSION + real_chunk_len];
 
                     // Decompress chunk data
-                    let mut decoder = ZlibDecoder::new(chunk_payload);
-                    let mut chunk_decompressed_payload = Vec::new();
-                    decoder.read_to_end(&mut chunk_decompressed_payload)?;
-                    
-                    Ok(chunk_decompressed_payload)
-
+                    // acoording to minecraft wiki case Gzip and not compressed are not used in practice
+                    // but they are officially supported
+                    match CompressionType::from_u8(chunk_compression_method[0]) {
+                        Some(CompressionType::Gzip) => {
+                            // Gzip compression
+                            let mut decoder = GzDecoder::new(chunk_payload);
+                            let mut chunk_decompressed_payload = Vec::new();
+                            decoder.read_to_end(&mut chunk_decompressed_payload)?;
+                            Ok(chunk_decompressed_payload)
+                        },
+                        Some(CompressionType::Zlib) => { 
+                            // Zlib compression
+                            let mut decoder = ZlibDecoder::new(chunk_payload);
+                            let mut chunk_decompressed_payload = Vec::new();
+                            decoder.read_to_end(&mut chunk_decompressed_payload)?;
+                            Ok(chunk_decompressed_payload)
+                        },
+                        Some(CompressionType::Uncompressed) => {
+                            // Data is uncompressed
+                            let chunk_decompressed_payload = chunk_payload.to_vec();
+                            Ok(chunk_decompressed_payload)
+                        },
+                        _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unknown compression format"))
+                    }
                 }
                 else {
                     Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid or Unsupported chunk header length"))
@@ -108,7 +151,7 @@ impl RegionFile {
             Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid chunk index"))
         }
     }
-
+    
     fn read_header(region_content: &Vec<u8>) -> Result<&[u8], &'static str> {
         if region_content.len() >= HEADER_LENGTH {
             Ok(&region_content[..HEADER_LENGTH])
