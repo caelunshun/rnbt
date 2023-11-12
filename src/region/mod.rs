@@ -115,31 +115,7 @@ impl RegionFile {
                     let chunk_compression_method = &chunk_data[CHUNK_HEADER_LENGTH..CHUNK_HEADER_COMPRESSION];
                     let chunk_payload = &chunk_data[CHUNK_HEADER_COMPRESSION..CHUNK_HEADER_COMPRESSION + real_chunk_len];
 
-                    // Decompress chunk data
-                    // acoording to minecraft wiki case Gzip and not compressed are not used in practice
-                    // but they are officially supported
-                    match CompressionType::from_u8(chunk_compression_method[0]) {
-                        Some(CompressionType::Gzip) => {
-                            // Gzip compression
-                            let mut decoder = GzDecoder::new(chunk_payload);
-                            let mut chunk_decompressed_payload = Vec::new();
-                            decoder.read_to_end(&mut chunk_decompressed_payload)?;
-                            Ok(chunk_decompressed_payload)
-                        },
-                        Some(CompressionType::Zlib) => { 
-                            // Zlib compression
-                            let mut decoder = ZlibDecoder::new(chunk_payload);
-                            let mut chunk_decompressed_payload = Vec::new();
-                            decoder.read_to_end(&mut chunk_decompressed_payload)?;
-                            Ok(chunk_decompressed_payload)
-                        },
-                        Some(CompressionType::Uncompressed) => {
-                            // Data is uncompressed
-                            let chunk_decompressed_payload = chunk_payload.to_vec();
-                            Ok(chunk_decompressed_payload)
-                        },
-                        _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unknown compression format"))
-                    }
+                    Self::decode_binary_data(chunk_payload, chunk_compression_method)
                 }
                 else {
                     Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid or Unsupported chunk header length"))
@@ -153,6 +129,34 @@ impl RegionFile {
         }
     }
     
+    fn decode_binary_data(chunk_payload: &[u8], chunk_compression_method: &[u8]) -> io::Result<Vec<u8>> {
+        // Decompress chunk data
+        // acoording to minecraft wiki case Gzip and not compressed are not used in practice
+        // but they are officially supported
+        match CompressionType::from_u8(chunk_compression_method[0]) {
+            Some(CompressionType::Gzip) => {
+                // Gzip compression
+                let mut decoder = GzDecoder::new(chunk_payload);
+                let mut chunk_decompressed_payload = Vec::new();
+                decoder.read_to_end(&mut chunk_decompressed_payload)?;
+                Ok(chunk_decompressed_payload)
+            },
+            Some(CompressionType::Zlib) => { 
+                // Zlib compression
+                let mut decoder = ZlibDecoder::new(chunk_payload);
+                let mut chunk_decompressed_payload = Vec::new();
+                decoder.read_to_end(&mut chunk_decompressed_payload)?;
+                Ok(chunk_decompressed_payload)
+            },
+            Some(CompressionType::Uncompressed) => {
+                // Data is uncompressed
+                let chunk_decompressed_payload = chunk_payload.to_vec();
+                Ok(chunk_decompressed_payload)
+            },
+            _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unknown compression format"))
+        }
+    }
+
     fn read_header(region_content: &Vec<u8>) -> Result<&[u8], &'static str> {
         if region_content.len() >= HEADER_LENGTH {
             Ok(&region_content[..HEADER_LENGTH])
