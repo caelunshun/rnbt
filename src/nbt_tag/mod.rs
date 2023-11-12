@@ -11,6 +11,54 @@ use derive_new::new;
 #[cfg(test)]
 mod tests;
 
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct NbtTagCompound {
+    pub name: String,
+    pub values: HashMap<String, NbtTag>,
+}
+
+
+impl NbtTagCompound {
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+            values: HashMap::new(),
+        }
+    }
+
+    pub fn get(&self, name: &str) -> Option<NbtTag> {
+        self.values.get(name).cloned()
+    }
+
+    pub fn set(&mut self, name: &str, value: NbtTag) {
+        self.values.insert(name.to_string(), value);
+    }
+
+    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+        // Open a file for writing.
+        let file = fs::File::create(path)?;
+        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
+
+        // Write the pretty-printed JSON to the file.
+        serde_json::to_writer_pretty(writer, &self)?;
+        
+        Ok(())
+    }
+
+    pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
+
+        let file = fs::File::open(path)?;
+        let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
+
+        // Deserialize the JSON data directly from the stream.
+        let deserialized_nbt = serde_json::from_reader(reader)?;
+        
+        Ok(deserialized_nbt)
+    }
+}
+
+
 /// Represents the type of an NBT (Named Binary Tag) tag.
 ///
 /// NBT is a tag-based binary format used to store structured data.
@@ -409,53 +457,6 @@ pub struct NbtTagList {
     pub name: String,
     pub ty: NbtTagType,
     pub values: Vec<NbtTag>,
-}
-
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct NbtTagCompound {
-    pub name: String,
-    pub values: HashMap<String, NbtTag>,
-}
-
-
-impl NbtTagCompound {
-    pub fn new(name: &str) -> Self {
-        Self {
-            name: name.to_string(),
-            values: HashMap::new(),
-        }
-    }
-
-    pub fn get(&self, name: &str) -> Option<NbtTag> {
-        self.values.get(name).cloned()
-    }
-
-    pub fn set(&mut self, name: &str, value: NbtTag) {
-        self.values.insert(name.to_string(), value);
-    }
-
-    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
-        // Open a file for writing.
-        let file = fs::File::create(path)?;
-        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
-
-        // Write the pretty-printed JSON to the file.
-        serde_json::to_writer_pretty(writer, &self)?;
-        
-        Ok(())
-    }
-
-    pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
-
-        let file = fs::File::open(path)?;
-        let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
-
-        // Deserialize the JSON data directly from the stream.
-        let deserialized_nbt = serde_json::from_reader(reader)?;
-        
-        Ok(deserialized_nbt)
-    }
 }
 
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
