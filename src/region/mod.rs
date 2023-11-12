@@ -8,6 +8,8 @@ use flate2::read::ZlibDecoder;
 use std::path::PathBuf;
 
 const HEADER_LENGTH: usize = 4096;
+const CHUNK_HEADER_LENGTH: usize = 4;
+const CHUNK_HEADER_COMPRESSION: usize = CHUNK_HEADER_LENGTH + 1;
 
 
 pub struct RegionFile {
@@ -78,12 +80,27 @@ impl RegionFile {
             if (offset as usize) < raw_data.len() && (offset as usize) + (size as usize) <= raw_data.len() {
                 let chunk_data = &raw_data[offset as usize..(offset as usize) + (size as usize)];
 
-                // Decompress chunk data
-                let mut decoder = ZlibDecoder::new(chunk_data);
-                let mut chunk_decompressed_data = Vec::new();
-                decoder.read_to_end(&mut chunk_decompressed_data)?;
+                let real_chunk_len_slice = &chunk_data[..CHUNK_HEADER_LENGTH];
+
+                if real_chunk_len_slice.len() == 4 {
+                    let bytes = [real_chunk_len_slice[0], real_chunk_len_slice[1], real_chunk_len_slice[2], real_chunk_len_slice[3]];
+                    
+                    let real_chunk_len = u32::from_be_bytes(bytes) as usize;
+                    let chunk_compression_method = &chunk_data[CHUNK_HEADER_LENGTH..CHUNK_HEADER_COMPRESSION];
+                    let chunk_payload = &chunk_data[CHUNK_HEADER_COMPRESSION..CHUNK_HEADER_COMPRESSION + real_chunk_len];
+
+                    // Decompress chunk data
+                    let mut decoder = ZlibDecoder::new(chunk_payload);
+                    let mut chunk_decompressed_payload = Vec::new();
+                    decoder.read_to_end(&mut chunk_decompressed_payload)?;
+                    
+                    Ok(chunk_decompressed_payload)
+
+                }
+                else {
+                    Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid or Unsupported chunk header length"))
+                }
                 
-                Ok(chunk_decompressed_data)
             } else {
                 Err(io::Error::new(io::ErrorKind::InvalidInput, "Chunk offset/size out of bounds"))
             }
@@ -111,9 +128,6 @@ impl RegionFile {
             })
             .collect()
     }
-    
-    
-
     
 }
 

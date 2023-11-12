@@ -64,8 +64,8 @@ impl FileParser {
         
         // Open the file and create a buffered reader for efficient reading
         let file = fs::File::open(&self.file_path)?;
-        let decoder = GzDecoder::new(file);
-        let mut reader = BufReader::new(decoder);
+        // let decoder = GzDecoder::new(file);
+        let mut reader = BufReader::new(file);
 
         // Read the entire contents into a buffer
         let mut buf = Vec::new();
