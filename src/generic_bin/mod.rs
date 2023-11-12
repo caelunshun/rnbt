@@ -1,5 +1,5 @@
 use crate::file_parser;
-use crate::nbt_tag::NbtTagCompound;
+use crate::nbt_tag::{NbtTag, NbtTagCompound};
 use std::io;
 use std::path::PathBuf;
 use flate2::read::ZlibDecoder;
@@ -50,29 +50,34 @@ impl GenericBinFile {
         &self.raw_data
     }
 
-    pub fn to_compounds_list(&self) -> std::io::Result<Vec<NbtTagCompound>> {
-
+    pub fn to_tag(&self) -> std::io::Result<NbtTag> {
         let uncompressed_data = self.try_decode_data()?;
-
         let root = match file_parser::parse_bytes(&uncompressed_data) {
             Ok(nbt_tag) => nbt_tag,  // On success, return the NbtTag
             Err(_) => return Err(std::io::Error::new(std::io::ErrorKind::Other, "Invalid NBT file")),
         };
-        
-        let compound = match root.compound() {
+
+        Ok(root)
+    }
+
+    pub fn to_tag_compound(&self) -> std::io::Result<NbtTagCompound> {
+        let compound = match self.to_tag()?.compound() {
             Some(nbt_tag) => nbt_tag,  // On success, return the NbtTag
             None => return Err(std::io::Error::new(std::io::ErrorKind::Other, "Invalid Compound tag")),
         };
+        
+        Ok(compound)
+    }
 
+    pub fn to_compounds_list(&self) -> std::io::Result<Vec<NbtTagCompound>> {
         let mut compunds_list = Vec::new();
-        compunds_list.push(compound);
+        compunds_list.push(self.to_tag_compound()?);
 
         Ok(compunds_list)
     }
 
 
     pub fn try_decode_data(&self) -> io::Result<Vec<u8>> {
-        
         let methods = [CompressionType::Gzip, CompressionType::Zlib, CompressionType::Uncompressed];
         
         for method in methods {

@@ -1,34 +1,13 @@
 use crate::file_parser;
-use crate::file_parser::{FileParser, ReadMode};
 use crate::nbt_tag::*;
 use crate::generic_bin::*;
 
-use std::fs::File;
-use std::io::{self, Read, Seek, SeekFrom};
-use flate2::read::ZlibDecoder;
-use flate2::read::GzDecoder;
+use std::io;
 use std::path::PathBuf;
 
 const HEADER_LENGTH: usize = 4096;
 const CHUNK_HEADER_LENGTH: usize = 4;
 const CHUNK_HEADER_COMPRESSION: usize = CHUNK_HEADER_LENGTH + 1;
-
-pub enum CompressionType {
-    Uncompressed = 0,
-    Gzip = 1,
-    Zlib = 2,
-}
-
-impl CompressionType {
-    fn from_u8(value: u8) -> Option<Self> {
-        match value {
-            0 => Some(CompressionType::Uncompressed),
-            1 => Some(CompressionType::Gzip),
-            2 => Some(CompressionType::Zlib),
-            _ => None,
-        }
-    }
-}
 
 pub struct RegionFile {
     bin_content: GenericBinFile,
@@ -70,6 +49,27 @@ impl RegionFile {
         Ok(chunks_as_nbt)
     }
     
+    
+    fn read_header(region_content: &Vec<u8>) -> Result<&[u8], &'static str> {
+        if region_content.len() >= HEADER_LENGTH {
+            Ok(&region_content[..HEADER_LENGTH])
+        } 
+        else {
+            Err("INVALID REGIORN FILE: Data is shorter than expected header length.")
+        }
+    }
+    
+    fn parse_chunk_offsets(header: &[u8]) -> Vec<(u32, u32)> {
+        header
+            .chunks(4)
+            .map(|chunk| {
+                let offset = u32::from_be_bytes([chunk[0], chunk[1], chunk[2], 0]) << 4;
+                let size = u32::from(chunk[3]) * 4096;
+                (offset, size)
+            })
+            .collect()
+    }
+
     /// Public method to process the region file.
     fn process_all_chunks(&self) -> io::Result<Vec<NbtTagCompound>> {
 
@@ -131,54 +131,6 @@ impl RegionFile {
         } else {
             Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid chunk index"))
         }
-    }
-    
-    // fn decode_binary_data(chunk_payload: &[u8], chunk_compression_method: &[u8]) -> io::Result<Vec<u8>> {
-    //     // Decompress chunk data
-    //     // acoording to minecraft wiki case Gzip and not compressed are not used in practice
-    //     // but they are officially supported
-    //     match CompressionType::from_u8(chunk_compression_method[0]) {
-    //         Some(CompressionType::Gzip) => {
-    //             // Gzip compression
-    //             let mut decoder = GzDecoder::new(chunk_payload);
-    //             let mut chunk_decompressed_payload = Vec::new();
-    //             decoder.read_to_end(&mut chunk_decompressed_payload)?;
-    //             Ok(chunk_decompressed_payload)
-    //         },
-    //         Some(CompressionType::Zlib) => { 
-    //             // Zlib compression
-    //             let mut decoder = ZlibDecoder::new(chunk_payload);
-    //             let mut chunk_decompressed_payload = Vec::new();
-    //             decoder.read_to_end(&mut chunk_decompressed_payload)?;
-    //             Ok(chunk_decompressed_payload)
-    //         },
-    //         Some(CompressionType::Uncompressed) => {
-    //             // Data is uncompressed
-    //             let chunk_decompressed_payload = chunk_payload.to_vec();
-    //             Ok(chunk_decompressed_payload)
-    //         },
-    //         _ => Err(io::Error::new(io::ErrorKind::InvalidInput, "Unknown compression format"))
-    //     }
-    // }
-
-    fn read_header(region_content: &Vec<u8>) -> Result<&[u8], &'static str> {
-        if region_content.len() >= HEADER_LENGTH {
-            Ok(&region_content[..HEADER_LENGTH])
-        } 
-        else {
-            Err("INVALID REGIORN FILE: Data is shorter than expected header length.")
-        }
-    }
-    
-    fn parse_chunk_offsets(header: &[u8]) -> Vec<(u32, u32)> {
-        header
-            .chunks(4)
-            .map(|chunk| {
-                let offset = u32::from_be_bytes([chunk[0], chunk[1], chunk[2], 0]) << 4;
-                let size = u32::from(chunk[3]) * 4096;
-                (offset, size)
-            })
-            .collect()
     }
     
 }
