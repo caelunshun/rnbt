@@ -6,6 +6,11 @@ use flate2::read::ZlibDecoder;
 use flate2::read::GzDecoder;
 use std::io::Read;
 
+pub enum FileType {
+    Nbt,
+    Region,
+}
+
 pub enum CompressionType {
     Uncompressed = 0,
     Gzip = 1,
@@ -36,15 +41,18 @@ pub struct GenericBinFile {
 }
 
 impl GenericBinFile {
-    pub fn new(file_path: &PathBuf) -> io::Result<Self> {
-        let bin_file = file_parser::FileParser::new(file_path, file_parser::ReadMode::EntireFile, file_parser::FileType::Nbt).read()?;
-        
+    pub fn new(file_path: &PathBuf, file_type: FileType) -> io::Result<Self> {
+        let bin_file = file_parser::FileParser::new(file_path, file_parser::ReadMode::EntireFile, file_type).read()?;
         Ok(GenericBinFile { raw_data: bin_file})
+    }
+
+    pub fn get_raw_data(&self) -> &Vec<u8> {
+        &self.raw_data
     }
 
     pub fn to_compounds_list(&self) -> std::io::Result<Vec<NbtTagCompound>> {
 
-        let uncompressed_data = Self::try_decode_data(&self.raw_data)?;
+        let uncompressed_data = self.try_decode_data()?;
 
         let root = match file_parser::parse_bytes(&uncompressed_data) {
             Ok(nbt_tag) => nbt_tag,  // On success, return the NbtTag
@@ -63,23 +71,23 @@ impl GenericBinFile {
     }
 
 
-    fn try_decode_data(raw_data: &[u8]) -> io::Result<Vec<u8>> {
+    pub fn try_decode_data(&self) -> io::Result<Vec<u8>> {
         
         let methods = [CompressionType::Gzip, CompressionType::Zlib, CompressionType::Uncompressed];
         
         for method in methods {
-            let uncompressed_data = match Self::decode_binary_data(&raw_data, [method.to_u8()].as_slice()) {
+            let uncompressed_data = match self.decode_binary_data(&self.raw_data, [method.to_u8()].as_slice()) {
                 Ok(uncompressed_data) => uncompressed_data,
                 Err(_) => continue,
             };
-            return Ok(uncompressed_data);
-                    
+            
+            return Ok(uncompressed_data);        
         }
         
         Err(io::Error::new(io::ErrorKind::Other, "All decompression attempts failed"))
     }
 
-    fn decode_binary_data(chunk_payload: &[u8], chunk_compression_method: &[u8]) -> io::Result<Vec<u8>> {
+    pub fn decode_binary_data(&self, chunk_payload: &[u8], chunk_compression_method: &[u8]) -> io::Result<Vec<u8>> {
         // Decompress chunk data
         // acoording to minecraft wiki case Gzip and not compressed are not used in practice
         // but they are officially supported

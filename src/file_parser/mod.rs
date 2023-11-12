@@ -1,5 +1,5 @@
 use crate::nbt_tag::*;
-use crate::region::*;
+use crate::generic_bin;
 
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
@@ -12,11 +12,6 @@ use std::io::Read;
 #[cfg(test)]
 mod tests;
 
-pub enum FileType {
-    Nbt,
-    Region,
-}
-
 pub enum ReadMode {
     EntireFile,
     Stream,
@@ -25,11 +20,11 @@ pub enum ReadMode {
 pub struct FileParser {
     file_path: PathBuf,
     read_mode: ReadMode,
-    file_type: FileType,
+    file_type: generic_bin::FileType,
 }
 
 impl FileParser {
-    pub fn new(file_path: &PathBuf, read_mode: ReadMode, file_type: FileType) -> Self {
+    pub fn new(file_path: &PathBuf, read_mode: ReadMode, file_type: generic_bin::FileType) -> Self {
         FileParser { 
             file_path: file_path.to_path_buf(), 
             read_mode,

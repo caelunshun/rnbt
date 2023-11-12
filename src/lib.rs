@@ -36,7 +36,7 @@ impl McWorldDescriptor {
                 }
             }
             else if ext == "nbt" || ext == "litematic" {
-                let bin_content = generic_bin::GenericBinFile::new(input_path)?;
+                let bin_content = generic_bin::GenericBinFile::new(input_path, generic_bin::FileType::Nbt)?;
                 nbt_tag_compounds_list = match bin_content.to_compounds_list(){
                     Ok(c) => c,
                     Err(e) => return Err(e),
