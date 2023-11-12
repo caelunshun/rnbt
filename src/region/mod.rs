@@ -33,7 +33,7 @@ pub struct RegionFile {
     raw_data: Vec<u8>,
     num_chunks: usize,
     chunk_offsets: Vec<(u32, u32)>,
-    chunks_as_nbt: Vec<NbtTagCompound>,
+    //chunks_as_nbt: Vec<NbtTagCompound>,
 }
 
 impl RegionFile {
@@ -49,10 +49,10 @@ impl RegionFile {
 
         let offsets = Self::parse_chunk_offsets(&header);
         let num_chunks = offsets.len();
-        let chunks_as_nbt = Self::process_all_chunks(&region_content, num_chunks, &offsets)?;
+        //let chunks_as_nbt = Self::process_all_chunks(&region_content, num_chunks, &offsets)?;
 
 
-        Ok(RegionFile {raw_data: region_content, num_chunks, chunk_offsets: offsets, chunks_as_nbt})
+        Ok(RegionFile {raw_data: region_content, num_chunks, chunk_offsets: offsets})
     }
 
     /// Returns the number of chunks in the region file.
@@ -60,8 +60,9 @@ impl RegionFile {
         self.num_chunks
     }
 
-    pub fn get_chunks_as_nbtcompound(&self) -> &Vec<NbtTagCompound> {
-        &self.chunks_as_nbt
+    pub fn to_compounds_list(&self) -> std::io::Result<Vec<NbtTagCompound>> {
+        let chunks_as_nbt = Self::process_all_chunks(&self.raw_data, self.num_chunks, &self.chunk_offsets)?;
+        Ok(chunks_as_nbt)
     }
     
     /// Public method to process the region file.
