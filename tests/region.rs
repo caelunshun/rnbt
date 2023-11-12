@@ -11,8 +11,9 @@ fn read_region_file() {
     let mc_world = McWorldDescriptor::new(path);
 
     // Confirm that values are correct
-    let c = mc_world.unwrap().raw_data;
-
+    let mc_world = mc_world.unwrap();
+    let c = mc_world.tag_compounds_list.get(0).unwrap();
+    
     assert_eq!(c.get("intTest").unwrap().int().unwrap().value, 2147483647);
     assert_eq!(c.get("byteTest").unwrap().byte().unwrap().value, 127);
     assert_eq!(
