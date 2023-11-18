@@ -21,7 +21,9 @@ pub struct NbtTagCompound {
     pub values: HashMap<String, NbtTag>,
 }
 
+#[pymethods]
 impl NbtTagCompound {
+    #[new]
     pub fn new(name: &str) -> Self {
         Self {
             name: name.to_string(),
@@ -29,13 +31,13 @@ impl NbtTagCompound {
         }
     }
 
-    pub fn get(&self, name: &str) -> Option<NbtTag> {
+    /* pub fn get(&self, name: &str) -> Option<NbtTag> {
         self.values.get(name).cloned()
     }
 
     pub fn set(&mut self, name: &str, value: NbtTag) {
         self.values.insert(name.to_string(), value);
-    }
+    } */
 
 /*     pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         // Open a file for writing.
@@ -48,7 +50,7 @@ impl NbtTagCompound {
         Ok(())
     } */
 
-    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+    /* pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         // Open a file for writing.
         let file = fs::File::create(path)?;
         let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
@@ -58,9 +60,9 @@ impl NbtTagCompound {
         
         Ok(())
     }
+ */
 
-
-    pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
+   /*  pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
 
         let file = fs::File::open(path)?;
         let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
@@ -70,7 +72,7 @@ impl NbtTagCompound {
         
         Ok(deserialized_nbt)
 
-    }
+    } */
 
 /*     pub fn from_json(&self, path: String) -> PyResult<Self> {
         let path = PathBuf::from(path);

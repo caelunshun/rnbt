@@ -13,6 +13,7 @@ use pyo3::wrap_pyfunction;
 fn rnbt(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<McWorldDescriptor>()?;
     m.add_class::<nbt_tag::NbtTagCompound>()?;
+
     m.add_function(wrap_pyfunction!(load_binary, m)?)?;
     Ok(())
 }
