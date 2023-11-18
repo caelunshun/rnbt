@@ -12,6 +12,7 @@ use pyo3::wrap_pyfunction;
 #[pymodule]
 fn rnbt(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<McWorldDescriptor>()?;
+    m.add_class::<nbt_tag::NbtTagCompound>()?;
     m.add_function(wrap_pyfunction!(load_binary, m)?)?;
     Ok(())
 }
@@ -28,7 +29,7 @@ fn load_binary(input_path: String) -> PyResult<McWorldDescriptor> {
 pub struct McWorldDescriptor {
     pub input_path: PathBuf,
     pub version: String,
-    //pub tag_compounds_list: Vec<nbt_tag::NbtTagCompound>,
+    pub tag_compounds_list: Vec<nbt_tag::NbtTagCompound>,
 }
 
 #[pymethods]
@@ -36,14 +37,14 @@ impl McWorldDescriptor {
     #[new]
     pub fn new(input_path: PathBuf) -> std::io::Result<Self> {
         //let tag_compounds_list = Self::read_from_binary_file(&input_path)?;
-
+        let tag_compounds_list = Vec::<nbt_tag::NbtTagCompound>::new();
         //let tag_compounds_list = Self::read_from_binary_file(&input_path)
         //    .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))?;
 
         Ok(McWorldDescriptor {
             input_path,
             version: "0.0.0".to_string(),
-            //tag_compounds_list,
+            tag_compounds_list,
         })
     }
 

@@ -14,6 +14,7 @@ use pyo3::prelude::*;
 #[cfg(test)]
 mod tests;
 
+#[pyclass]
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagCompound {
     pub name: String,
