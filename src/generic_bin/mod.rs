@@ -41,7 +41,7 @@ pub struct GenericBinFile {
 }
 
 impl GenericBinFile {
-    pub fn new(file_path: &PathBuf, file_type: FileType) -> io::Result<Self> {
+    pub fn new(file_path: PathBuf, file_type: FileType) -> io::Result<Self> {
         let bin_file = file_parser::FileParser::new(file_path, file_parser::ReadMode::EntireFile, file_type).read()?;
         Ok(GenericBinFile { raw_data: bin_file})
     }

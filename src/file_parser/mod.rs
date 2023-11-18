@@ -24,7 +24,7 @@ pub struct FileParser {
 }
 
 impl FileParser {
-    pub fn new(file_path: &PathBuf, read_mode: ReadMode, file_type: generic_bin::FileType) -> Self {
+    pub fn new(file_path: PathBuf, read_mode: ReadMode, file_type: generic_bin::FileType) -> Self {
         FileParser { 
             file_path: file_path.to_path_buf(), 
             read_mode,

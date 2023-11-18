@@ -17,7 +17,7 @@ pub struct RegionFile {
 }
 
 impl RegionFile {
-    pub fn new(file_path: &PathBuf) -> io::Result<Self> {
+    pub fn new(file_path: PathBuf) -> io::Result<Self> {
         let generic_bin = GenericBinFile::new(file_path, FileType::Region)?;
         let mut region_file = RegionFile { bin_content: generic_bin, num_chunks: 0, chunk_offsets: Vec::new() };
 
