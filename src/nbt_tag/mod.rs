@@ -1,6 +1,6 @@
 use byteorder::{BigEndian, WriteBytesExt};
 use std::collections::HashMap;
-
+use std::path::PathBuf;
 use std::io::Write;
 use serde::Serialize;
 use serde::Deserialize;
@@ -8,16 +8,17 @@ use std::fs;
 use std::io::{self, BufWriter, BufReader};
 use derive_new::new;
 
+use pyo3::prelude::*;
+
+
 #[cfg(test)]
 mod tests;
-
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagCompound {
     pub name: String,
     pub values: HashMap<String, NbtTag>,
 }
-
 
 impl NbtTagCompound {
     pub fn new(name: &str) -> Self {
@@ -35,6 +36,17 @@ impl NbtTagCompound {
         self.values.insert(name.to_string(), value);
     }
 
+/*     pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+        // Open a file for writing.
+        let file = fs::File::create(path)?;
+        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
+
+        // Write the pretty-printed JSON to the file.
+        serde_json::to_writer_pretty(writer, &self)?;
+        
+        Ok(())
+    } */
+
     pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         // Open a file for writing.
         let file = fs::File::create(path)?;
@@ -46,6 +58,7 @@ impl NbtTagCompound {
         Ok(())
     }
 
+
     pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
 
         let file = fs::File::open(path)?;
@@ -55,7 +68,19 @@ impl NbtTagCompound {
         let deserialized_nbt = serde_json::from_reader(reader)?;
         
         Ok(deserialized_nbt)
+
     }
+
+/*     pub fn from_json(&self, path: String) -> PyResult<Self> {
+        let path = PathBuf::from(path);
+        let file = fs::File::open(&path)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))?;
+        let reader = BufReader::new(file); // Wrap the file in a BufReader
+
+        // Deserialize the JSON data directly from the stream.
+        serde_json::from_reader(reader)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))
+    } */
 }
 
 
