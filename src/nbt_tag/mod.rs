@@ -322,7 +322,7 @@ impl NbtTag {
 }
 
 
-#[pyclass]
+#[pyclass(get_all)]
 #[derive(Clone, Debug)]
 pub struct PyNbtTag {
     //pub nbt_tag: &'a NbtTag,

@@ -20,35 +20,40 @@ fn rnbt(py: Python, m: &PyModule) -> PyResult<()> {
 }
 
 #[pyfunction]
-fn load_binary(input_path: String) -> PyResult<McWorldDescriptor> {   
+fn load_binary(input_path: String) -> PyResult<PyMcWorldDescriptor> {   
     let path_buf = PathBuf::from(input_path);
-    McWorldDescriptor::new(path_buf).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))   
+    let mc_world = McWorldDescriptor::new(path_buf)?; 
+    PyMcWorldDescriptor::new(&mc_world).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))
 }
 
-
-
-#[pyclass(get_all)]
+#[pyclass]
 #[derive(Clone, Debug)]
 pub struct PyMcWorldDescriptor {
+    #[pyo3(get, set)]
     pub input_path: String,
+    #[pyo3(get, set)]
     pub version: String,
-    pub tag_compounds_list: nbt_tag::PyNbtTag,
+    #[pyo3(get, set)]
+    pub tag_compounds_list: Vec::<nbt_tag::PyNbtTag>,
 }
 
 #[pymethods]
 impl PyMcWorldDescriptor {
     #[new]
-    pub fn new(rMcDescriptor: &McWorldDescriptor) -> std::io::Result<Self> {
-        let tag_test = rMcDescriptor.tag_compounds_list.get(0).unwrap();
-        let tag_root = nbt_tag::NbtTag::Compound(tag_test.clone());
-        let pytag_test = PyNbtTag::new(&tag_root);
+    pub fn new(rust_mc_world_descriptor: &McWorldDescriptor) -> std::io::Result<Self> {
         
-        let path_str = rMcDescriptor.input_path.to_str().unwrap().to_string(); 
-
+        let path_str = rust_mc_world_descriptor.input_path.to_str().unwrap().to_string(); 
+        let mut py_tag_list = Vec::<nbt_tag::PyNbtTag>::new();
+        
+        rust_mc_world_descriptor.tag_compounds_list.iter().for_each(|item| {
+            let tag_root = nbt_tag::NbtTag::Compound(item.clone());
+            py_tag_list.push(PyNbtTag::new(&tag_root))
+        });
+        
         Ok(PyMcWorldDescriptor {
             input_path: path_str,
             version: "0.0.0".to_string(),
-            tag_compounds_list: pytag_test
+            tag_compounds_list: py_tag_list
         })
     }
 
