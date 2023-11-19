@@ -34,6 +34,19 @@ switch ($buildMode) {
 }
 
 Write-Host "=========================="
+
+# Check if the build was successful
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "Build completed successfully" -ForegroundColor Green
+    Write-Host "=========================="
+    Write-Host "Build Python package with maturing"
+    maturin develop
+} else {
+    Write-Host "Build failed" -ForegroundColor Red
+}
+Write-Host "=========================="
+
+
 # Check if the build was successful
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Build completed successfully" -ForegroundColor Green

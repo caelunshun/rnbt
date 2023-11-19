@@ -6,13 +6,14 @@ pub mod region;
 pub mod generic_bin;
 
 use nbt_tag::NbtTagCompound;
+use nbt_tag::PyNbtTag;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
 #[pymodule]
 fn rnbt(py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<McWorldDescriptor>()?;
-    m.add_class::<nbt_tag::NbtTagCompound>()?;
+    m.add_class::<PyMcWorldDescriptor>()?;
+    m.add_class::<nbt_tag::PyNbtTag>()?;
 
     m.add_function(wrap_pyfunction!(load_binary, m)?)?;
     Ok(())
@@ -24,7 +25,37 @@ fn load_binary(input_path: String) -> PyResult<McWorldDescriptor> {
     McWorldDescriptor::new(path_buf).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))   
 }
 
+
+
 #[pyclass(get_all)]
+#[derive(Clone, Debug)]
+pub struct PyMcWorldDescriptor {
+    pub input_path: String,
+    pub version: String,
+    pub tag_compounds_list: nbt_tag::PyNbtTag,
+}
+
+#[pymethods]
+impl PyMcWorldDescriptor {
+    #[new]
+    pub fn new(rMcDescriptor: &McWorldDescriptor) -> std::io::Result<Self> {
+        let tag_test = rMcDescriptor.tag_compounds_list.get(0).unwrap();
+        let tag_root = nbt_tag::NbtTag::Compound(tag_test.clone());
+        let pytag_test = PyNbtTag::new(&tag_root);
+        
+        let path_str = rMcDescriptor.input_path.to_str().unwrap().to_string(); 
+
+        Ok(PyMcWorldDescriptor {
+            input_path: path_str,
+            version: "0.0.0".to_string(),
+            tag_compounds_list: pytag_test
+        })
+    }
+
+
+}
+
+#[pyclass]
 #[derive(Clone, Debug, Default)]
 pub struct McWorldDescriptor {
     pub input_path: PathBuf,
@@ -32,9 +63,7 @@ pub struct McWorldDescriptor {
     pub tag_compounds_list: Vec<nbt_tag::NbtTagCompound>,
 }
 
-#[pymethods]
 impl McWorldDescriptor {
-    #[new]
     pub fn new(input_path: PathBuf) -> std::io::Result<Self> {
         let cloned_input_path = input_path.clone();
         //let tag_compounds_list = Self::read_from_binary_file(input_path)?;
