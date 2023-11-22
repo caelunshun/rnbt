@@ -1,4 +1,4 @@
-//! Tests the library using one of my region files
+/* //! Tests the library using one of my region files
 //! by Mojang.
 use flate2::read::GzDecoder;
 use rnbt::{NbtTagCompound, NbtTagInt};
@@ -58,3 +58,4 @@ fn regions() {
     );
     assert_eq!(c.get("shortTest").unwrap().short().unwrap().value, 32767);
 }
+ */

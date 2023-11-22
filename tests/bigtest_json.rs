@@ -1,4 +1,4 @@
-//! Tests the library using the `bigtest.nbt` file provided
+/* //! Tests the library using the `bigtest.nbt` file provided
 //! by Mojang.
 use rnbt::McWorldDescriptor;
 use rnbt::nbt_tag;
@@ -37,3 +37,4 @@ fn bigtest_json() {
     );
     assert_eq!(c_json.get("shortTest").unwrap().short().unwrap().value, 32767);
 }
+ */

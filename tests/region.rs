@@ -12,7 +12,7 @@ fn read_region_file() {
 
     // Confirm that values are correct
     let mc_world = mc_world.unwrap();
-    let c = mc_world.tag_compounds_list.get(0).unwrap();
+    let c = mc_world.tag_compounds_list.get(0).unwrap().values.clone();
     
     assert_eq!(c.get("intTest").unwrap().int().unwrap().value, 2147483647);
     assert_eq!(c.get("byteTest").unwrap().byte().unwrap().value, 127);

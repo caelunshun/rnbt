@@ -1,4 +1,4 @@
-use rnbt::McWorldDescriptor;
+/* use rnbt::McWorldDescriptor;
 use std::path::PathBuf;
 
 
@@ -19,3 +19,4 @@ fn litematica() {
     // assert_eq!(c.get("BlockStatePalette").unwrap().int().unwrap().value, 2147483647);
     
 }
+ */

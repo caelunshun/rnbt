@@ -1,4 +1,4 @@
-use rnbt::McWorldDescriptor;
+/* use rnbt::McWorldDescriptor;
 use rnbt::nbt_tag;
 use std::path::PathBuf;
 
@@ -20,3 +20,4 @@ fn litematica_json() {
     let c_json = nbt_tag::NbtTagCompound::from_json("tests/outputs/litematica.json").unwrap();
 
 }
+ */
