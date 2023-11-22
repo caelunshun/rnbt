@@ -9,13 +9,16 @@ use nbt_tag::NbtTagCompound;
 use nbt_tag::PyNbtTag;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
+use log::info;
 
 #[pymodule]
 fn rnbt(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyMcWorldDescriptor>()?;
     m.add_class::<nbt_tag::PyNbtTag>()?;
-
     m.add_function(wrap_pyfunction!(load_binary, m)?)?;
+
+    pyo3_log::init();
+
     Ok(())
 }
 
