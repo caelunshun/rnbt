@@ -9,7 +9,7 @@ use std::io::{self, BufWriter, BufReader};
 use derive_new::new;
 
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, IntoPyDict};
+use pyo3::types::{PyDict, PyList};
 use pyo3::exceptions::{PyTypeError, PyKeyError};
 
 #[cfg(test)]
@@ -342,70 +342,98 @@ impl PyNbtTag {
         
         Python::with_gil(|py| {
             let dict: Py<PyDict> = PyDict::new(py).into();
+            // TODO: Get rid of all these unwraps
 
             match nbt_tag.ty() {
                 NbtTagType::End => {
-                    //let &dict: [(self.byte().value, 1)].into_py_dict(py);
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    dict.as_ref(py).set_item("END_TAG", 0).unwrap();
                     dict
                 },
                 NbtTagType::Byte => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_byte = nbt_tag.byte().unwrap();
+                    dict.as_ref(py).set_item(tag_byte.name, tag_byte.value).unwrap();
                     dict
 
                 },
                 NbtTagType::Short => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_short = nbt_tag.short().unwrap();
+                    dict.as_ref(py).set_item(tag_short.name, tag_short.value).unwrap();
                     dict
 
                 },
                 NbtTagType::Int => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_int = nbt_tag.int().unwrap_or_default(); //error without default.
+                    dict.as_ref(py).set_item(tag_int.name, tag_int.value).unwrap();
                     dict
 
                 },
                 NbtTagType::Long => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_long = nbt_tag.long().unwrap();
+                    dict.as_ref(py).set_item(tag_long.name, tag_long.value).unwrap();
                     dict
 
                 },
                 NbtTagType::Float => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_float = nbt_tag.float().unwrap();
+                    dict.as_ref(py).set_item(tag_float.name, tag_float.value).unwrap();
                     dict
 
                 },
                 NbtTagType::Double => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_double = nbt_tag.double().unwrap();
+                    dict.as_ref(py).set_item(tag_double.name, tag_double.value).unwrap();
                     dict
 
                 },
                 NbtTagType::ByteArray => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_byte_array = nbt_tag.byte_array().unwrap();
+                    dict.as_ref(py).set_item(tag_byte_array.name, tag_byte_array.values).unwrap();
                     dict
 
                 },
                 NbtTagType::String => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_string = nbt_tag.string().unwrap();
+                    dict.as_ref(py).set_item(tag_string.name, tag_string.value).unwrap();
                     dict
 
                 },
                 NbtTagType::List => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_list = nbt_tag.list().unwrap();
+                    let empty_object_array: &[PyObject] = &[];
+                    let py_list: &PyList = PyList::new(py, empty_object_array);
+                    //not efficient, i am processind the data two times, but for now make it work
+                    for list_element in &tag_list.values {
+                        let py_list_element = PyNbtTag::new(list_element);
+                        let _ = py_list.append(py_list_element.python_dict);
+                    }
+
+                    dict.as_ref(py).set_item(tag_list.name, py_list).unwrap();
                     dict
 
                 },
                 NbtTagType::Compound => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_compound = nbt_tag.compound().unwrap();
+                    //let empty_object_array: &[PyObject] = &[];
+                    let py_dict: &PyDict = PyDict::new(py);
+
+                    for (key, value) in tag_compound.values.iter() {
+                        let py_tag = PyNbtTag::new(value);
+                        let _ = py_dict.set_item(key, py_tag.python_dict);
+                    }
+
+                    dict.as_ref(py).set_item(tag_compound.name, py_dict).unwrap();
                     dict
 
                 },
                 NbtTagType::IntArray => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_int_array = nbt_tag.int_array().unwrap();
+                    dict.as_ref(py).set_item(tag_int_array.name, tag_int_array.values).unwrap();
                     dict
 
                 },
                 NbtTagType::LongArray => {
-                    dict.as_ref(py).set_item("a", 1).unwrap();
+                    let tag_long_array = nbt_tag.long_array().unwrap();
+                    dict.as_ref(py).set_item(tag_long_array.name, tag_long_array.values).unwrap();
                     dict
 
                 }
@@ -414,54 +442,63 @@ impl PyNbtTag {
     }
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagByte {
     pub name: String,
     pub value: i8,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagShort {
     pub name: String,
     pub value: i16,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagInt {
     pub name: String,
     pub value: i32,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagLong {
     pub name: String,
     pub value: i64,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagFloat {
     pub name: String,
     pub value: f32,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagDouble {
     pub name: String,
     pub value: f64,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagByteArray {
     pub name: String,
     pub values: Vec<i8>,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagString {
     pub name: String,
     pub value: String,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagList {
     pub name: String,
@@ -469,12 +506,14 @@ pub struct NbtTagList {
     pub values: Vec<NbtTag>,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagIntArray {
     pub name: String,
     pub values: Vec<i32>,
 }
 
+#[pyclass]
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagLongArray {
     pub name: String,

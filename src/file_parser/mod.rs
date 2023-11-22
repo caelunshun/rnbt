@@ -158,8 +158,11 @@ fn parse_list(cursor: &mut Cursor<&[u8]>, name: String) -> Result<NbtTagList, ()
 
     for _ in 0..len {
         let val = parse_value(cursor, ty, "".to_string())?;
-        values.push(val)
+        // expose to python
+        //let py_val = PyNbtTag::new(&val);
+        values.push(val);
     }
+
 
     Ok(NbtTagList::new(name, ty, values))
 }
