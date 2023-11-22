@@ -10,17 +10,24 @@ use nbt_tag::PyNbtTag;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use log::info;
+use pyo3_log;
 
 #[pymodule]
 fn rnbt(py: Python, m: &PyModule) -> PyResult<()> {
+    pyo3_log::init();
     m.add_class::<PyMcWorldDescriptor>()?;
     m.add_class::<nbt_tag::PyNbtTag>()?;
     m.add_function(wrap_pyfunction!(load_binary, m)?)?;
-
-    pyo3_log::init();
+    m.add_function(wrap_pyfunction!(py_log, m)?)?;
 
     Ok(())
 }
+#[pyfunction]
+fn py_log(message: String)  {
+    info!("{}", message);
+}
+
+
 
 #[pyfunction]
 fn load_binary(input_path: String) -> PyResult<PyMcWorldDescriptor> {   

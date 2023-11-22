@@ -12,8 +12,6 @@ use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList};
 use pyo3::exceptions::{PyTypeError, PyKeyError};
 
-use log::info;
-
 #[cfg(test)]
 mod tests;
 
@@ -365,13 +363,20 @@ impl PyNbtTag {
                 },
                 NbtTagType::Int => {
                     let tag_int = nbt_tag.int().unwrap_or_default(); //error without default.
+
+                    let log_msg = format!("Debug info - tag_long: Name: {}, Value: {}", tag_int.name, tag_int.value);
+                    crate::py_log(log_msg);
+
                     dict.as_ref(py).set_item(tag_int.name, tag_int.value).unwrap();
                     dict
 
                 },
                 NbtTagType::Long => {
                     let tag_long = nbt_tag.long().unwrap();
-                    info!("Debug info - tag_long: Name: {}, Value: {}", tag_long.name, tag_long.value);
+
+                    let log_msg = format!("Debug info - tag_long: Name: {}, Value: {}", tag_long.name, tag_long.value);
+                    crate::py_log(log_msg);
+                    
                     dict.as_ref(py).set_item(tag_long.name, tag_long.value).unwrap();
                     dict
 
