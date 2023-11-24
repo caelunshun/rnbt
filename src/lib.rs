@@ -1,11 +1,15 @@
-use std::path::PathBuf;
-
 pub mod nbt_tag;
 pub mod file_parser;
 pub mod region;
 pub mod generic_bin;
 
-use nbt_tag::NbtTagCompound;
+
+
+use std::collections::HashMap;
+use std::fs;
+use std::io::{self, BufWriter, BufReader};
+use std::path::PathBuf;
+use nbt_tag::{NbtTagCompound, SerializablePyDict};
 use nbt_tag::PyNbtTag;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
@@ -46,6 +50,8 @@ pub struct PyMcWorldDescriptor {
     pub version: String,
     #[pyo3(get, set)]
     pub tag_compounds_list: Vec::<Py<PyDict>>,
+    //TEST
+    ser_tag_compounts_list: Vec::<nbt_tag::SerializablePyDict>
 }
 
 #[pymethods]
@@ -54,19 +60,45 @@ impl PyMcWorldDescriptor {
     pub fn new(rust_mc_world_descriptor: &McWorldDescriptor) -> std::io::Result<Self> {
         
         let path_str = rust_mc_world_descriptor.input_path.to_str().unwrap().to_string(); 
-        let mut py_tag_list = Vec::<Py<PyDict>>::new();
+        let mut py_tag_list = Vec::<nbt_tag::SerializablePyDict>::new();
         
         rust_mc_world_descriptor.tag_compounds_list.iter().for_each(|item| {
             let tag_root = nbt_tag::NbtTag::Compound(item.clone());
-            py_tag_list.push(PyNbtTag::new(&tag_root).python_dict)
+            py_tag_list.push(PyNbtTag::new(&tag_root).ser_python_dict)
         });
-        
+    
+        //TEST
+        let py_tag_list_clone = py_tag_list.clone();
+
         Ok(PyMcWorldDescriptor {
             input_path: path_str,
             version: "0.0.0".to_string(),
-            tag_compounds_list: py_tag_list
+            tag_compounds_list: py_tag_list.into_iter().map(|s| s.get_py_dict().clone()).collect(),
+            ser_tag_compounts_list: py_tag_list_clone
         })
     }
+
+    pub fn to_json(&self, path: String) -> PyResult<()> {
+        // Open a file for writing.
+        let file = fs::File::create(path)?;
+        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
+
+        // Write the pretty-printed JSON to the file.
+        serde_json::to_writer_pretty(writer, &self.ser_tag_compounts_list).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)));
+        
+        Ok(())
+    }
+
+    /* pub fn from_json(&self, path: String) -> PyResult<Self> {
+        let path = PathBuf::from(path);
+        let file = fs::File::open(&path)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))?;
+        let reader = BufReader::new(file); // Wrap the file in a BufReader
+
+        // Deserialize the JSON data directly from the stream.
+        let tag_compound = serde_json::from_reader(reader)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)));
+    } */
 
 
 }

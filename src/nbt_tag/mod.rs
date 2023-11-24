@@ -2,8 +2,7 @@ use byteorder::{BigEndian, WriteBytesExt};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::io::Write;
-use serde::Serialize;
-use serde::Deserialize;
+use serde::{ser::SerializeMap, Serialize, Deserialize};
 use std::fs;
 use std::io::{self, BufWriter, BufReader};
 use derive_new::new;
@@ -75,7 +74,7 @@ impl NbtTagCompound {
 
     } */
 
-/*     pub fn from_json(&self, path: String) -> PyResult<Self> {
+    /* pub fn from_json(&self, path: String) -> PyResult<Self> {
         let path = PathBuf::from(path);
         let file = fs::File::open(&path)
             .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))?;
@@ -321,21 +320,73 @@ impl NbtTag {
 
 }
 
+#[derive(Clone, Debug)]
+pub struct SerializablePyDict(Py<PyDict>);
+
+impl SerializablePyDict {
+    pub fn get_py_dict(&self) -> &Py<PyDict> {
+        &self.0
+    }
+}
+
+impl IntoPy<Py<PyAny>> for SerializablePyDict {
+    fn into_py(self, py: Python) -> Py<PyAny> {
+        self.0.into_py(py)
+    }
+}
+
+impl ToPyObject for SerializablePyDict {
+    fn to_object(&self, py: Python) -> PyObject {
+        self.0.to_object(py) // Delegate to Py<PyDict>'s implementation
+    }
+}
+
+impl Serialize for SerializablePyDict {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        Python::with_gil(|py| {
+            let dict: &PyDict = self.0.as_ref(py);
+            let mut rust_dict = HashMap::new();
+
+            for (key, value) in dict.into_iter() {
+                let key_str = key.extract::<String>().map_err(serde::ser::Error::custom)?;
+                let value_str = value.extract::<PyNbtTag>().map_err(serde::ser::Error::custom)?;
+                rust_dict.insert(key_str, value_str);
+            }
+
+            let mut map = serializer.serialize_map(Some(rust_dict.len()))?;
+            for (k, v) in rust_dict {
+                map.serialize_entry(&k, &v.ser_python_dict)?;
+            }
+            map.end()
+        })
+    }
+}
+
 
 #[pyclass(get_all)]
 #[derive(Clone, Debug)]
 pub struct PyNbtTag {
     //pub nbt_tag: &'a NbtTag,
-    pub python_dict: Py<PyDict>
+    //pub python_dict: Py<PyDict>,
+    pub ser_python_dict: SerializablePyDict
 }
 
 impl PyNbtTag {
 
     pub fn new(nbt_tag: &NbtTag) -> Self {
         let python_dict = Self::to_python_dictionary(&nbt_tag);
+        let ser_py_dict = Self::to_ser_python_dictionary(python_dict);
         Self {
-            python_dict
+            //python_dict,
+            ser_python_dict: ser_py_dict
         }
+    }
+
+    fn to_ser_python_dictionary(py_dict: Py<PyDict>) -> SerializablePyDict {
+        SerializablePyDict(py_dict)
     }
 
     fn to_python_dictionary(nbt_tag: & NbtTag) -> Py<PyDict> {
@@ -446,7 +497,7 @@ impl PyNbtTag {
                     //not efficient, i am processind the data two times, but for now make it work
                     for list_element in &tag_list.values {
                         let py_list_element = PyNbtTag::new(list_element);
-                        let _ = py_list.append(py_list_element.python_dict);
+                        let _ = py_list.append(py_list_element.ser_python_dict);
 
                         let log_msg = format!("tag_list: parsed");
                         crate::py_log(log_msg);
@@ -466,7 +517,7 @@ impl PyNbtTag {
 
                     for (key, value) in tag_compound.values.iter() {
                         let py_tag = PyNbtTag::new(value);
-                        let _ = py_dict.set_item(key, py_tag.python_dict);
+                        let _ = py_dict.set_item(key, py_tag.ser_python_dict);
 
                         let log_msg = format!("tag_compound_hashmap: Name: {}, Value: {}", key, "[NbtTag]");
                         //let log_msg = format!("tag_compound_hashmap_tag: Name: {}, Value: {}", key, py_tag.python_dict.get_item(key).unwrap());
