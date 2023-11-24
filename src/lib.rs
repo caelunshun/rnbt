@@ -8,6 +8,7 @@ pub mod generic_bin;
 use nbt_tag::NbtTagCompound;
 use nbt_tag::PyNbtTag;
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 use pyo3::wrap_pyfunction;
 use log::info;
 use pyo3_log;
@@ -44,7 +45,7 @@ pub struct PyMcWorldDescriptor {
     #[pyo3(get, set)]
     pub version: String,
     #[pyo3(get, set)]
-    pub tag_compounds_list: Vec::<nbt_tag::PyNbtTag>,
+    pub tag_compounds_list: Vec::<Py<PyDict>>,
 }
 
 #[pymethods]
@@ -53,11 +54,11 @@ impl PyMcWorldDescriptor {
     pub fn new(rust_mc_world_descriptor: &McWorldDescriptor) -> std::io::Result<Self> {
         
         let path_str = rust_mc_world_descriptor.input_path.to_str().unwrap().to_string(); 
-        let mut py_tag_list = Vec::<nbt_tag::PyNbtTag>::new();
+        let mut py_tag_list = Vec::<Py<PyDict>>::new();
         
         rust_mc_world_descriptor.tag_compounds_list.iter().for_each(|item| {
             let tag_root = nbt_tag::NbtTag::Compound(item.clone());
-            py_tag_list.push(PyNbtTag::new(&tag_root))
+            py_tag_list.push(PyNbtTag::new(&tag_root).python_dict)
         });
         
         Ok(PyMcWorldDescriptor {
