@@ -51,7 +51,8 @@ pub struct PyMcWorldDescriptor {
     #[pyo3(get, set)]
     pub tag_compounds_list: Vec::<Py<PyDict>>,
     //TEST
-    ser_tag_compounts_list: Vec::<nbt_tag::SerializablePyDict>
+    #[pyo3(get, set)]
+    pub ser_tag_compounts_list: Vec::<nbt_tag::SerializablePyDict>
 }
 
 #[pymethods]

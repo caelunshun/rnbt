@@ -341,6 +341,13 @@ impl ToPyObject for SerializablePyDict {
     }
 }
 
+impl FromPyObject<'_> for SerializablePyDict {
+    fn extract(ob: &'_ PyAny) -> PyResult<Self> {
+        let py_dict: Py<PyDict> = ob.extract()?; // Extract as Py<PyDict> using PyDict's FromPyObject
+        Ok(SerializablePyDict(py_dict)) // Wrap in SerializablePyDict
+    }
+}
+
 impl Serialize for SerializablePyDict {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
