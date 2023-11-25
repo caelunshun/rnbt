@@ -85,6 +85,8 @@ impl PyMcWorldDescriptor {
     }
 
     pub fn to_json(&self, path: String) -> PyResult<()> {
+
+        self.mc_world_descriptor.to_json(path).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))
         // Open a file for writing.
 /*         let file = fs::File::create(path)?;
         let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
