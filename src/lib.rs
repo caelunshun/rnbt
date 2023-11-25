@@ -38,18 +38,19 @@ fn py_log(message: String)  {
 fn load_binary(input_path: String) -> PyResult<PyMcWorldDescriptor> {   
     let path_buf = PathBuf::from(input_path);
     let mc_world = McWorldDescriptor::new(path_buf)?; 
-    PyMcWorldDescriptor::new(&mc_world).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))
+    PyMcWorldDescriptor::new(mc_world).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))
 }
 
 #[pyclass]
 #[derive(Clone, Debug)]
 pub struct PyMcWorldDescriptor {
-    #[pyo3(get, set)]
+    /* #[pyo3(get, set)]
     pub input_path: String,
     #[pyo3(get, set)]
     pub version: String,
     #[pyo3(get, set)]
-    pub tag_compounds_list: Vec::<Py<PyDict>>,
+    pub tag_compounds_list: Vec::<Py<PyDict>>, */
+    mc_world_descriptor: McWorldDescriptor,
     //TEST
     #[pyo3(get, set)]
     pub ser_tag_compounts_list: Vec::<nbt_tag::SerializablePyDict>
@@ -58,9 +59,9 @@ pub struct PyMcWorldDescriptor {
 #[pymethods]
 impl PyMcWorldDescriptor {
     #[new]
-    pub fn new(rust_mc_world_descriptor: &McWorldDescriptor) -> std::io::Result<Self> {
+    pub fn new(rust_mc_world_descriptor: McWorldDescriptor) -> std::io::Result<Self> {
         
-        let path_str = rust_mc_world_descriptor.input_path.to_str().unwrap().to_string(); 
+        //let path_str = rust_mc_world_descriptor.input_path.to_str().unwrap().to_string(); 
         let mut py_tag_list = Vec::<nbt_tag::SerializablePyDict>::new();
         
         rust_mc_world_descriptor.tag_compounds_list.iter().for_each(|item| {
@@ -69,25 +70,31 @@ impl PyMcWorldDescriptor {
         });
     
         //TEST
-        let py_tag_list_clone = py_tag_list.clone();
+        //let py_tag_list_clone = py_tag_list.clone();
 
-        Ok(PyMcWorldDescriptor {
+        Ok(PyMcWorldDescriptor{ 
+            mc_world_descriptor: rust_mc_world_descriptor, 
+            ser_tag_compounts_list: py_tag_list 
+        })
+        /* Ok(PyMcWorldDescriptor {
             input_path: path_str,
             version: "0.0.0".to_string(),
             tag_compounds_list: py_tag_list.into_iter().map(|s| s.get_py_dict().clone()).collect(),
             ser_tag_compounts_list: py_tag_list_clone
-        })
+        }) */
     }
 
     pub fn to_json(&self, path: String) -> PyResult<()> {
         // Open a file for writing.
-        let file = fs::File::create(path)?;
+/*         let file = fs::File::create(path)?;
         let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
 
         // Write the pretty-printed JSON to the file.
-        serde_json::to_writer_pretty(writer, &self.ser_tag_compounts_list).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)));
-        
-        Ok(())
+        serde_json::to_writer_pretty(writer, &self.ser_tag_compounts_list)
+                .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))?;
+    
+            Ok(())
+ */
     }
 
     /* pub fn from_json(&self, path: String) -> PyResult<Self> {
@@ -151,6 +158,18 @@ impl McWorldDescriptor {
 
         
     }
+
+
+        pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+        // Open a file for writing.
+        let file = fs::File::create(path)?;
+        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
+
+        // Write the pretty-printed JSON to the file.
+        serde_json::to_writer_pretty(writer, &self.tag_compounds_list)?;
+        
+        Ok(())
+    } 
 
     /* fn read_from_binary_file(input_path: PathBuf) -> std::io::Result<Vec<nbt_tag::NbtTagCompound>> {
         if let Some(ext) = input_path.extension().and_then(|e| e.to_str()) {
