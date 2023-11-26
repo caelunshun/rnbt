@@ -297,63 +297,63 @@ impl NbtTag {
 }
 
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagByte {
     pub name: String,
     pub value: i8,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagShort {
     pub name: String,
     pub value: i16,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagInt {
     pub name: String,
     pub value: i32,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagLong {
     pub name: String,
     pub value: i64,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagFloat {
     pub name: String,
     pub value: f32,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagDouble {
     pub name: String,
     pub value: f64,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagByteArray {
     pub name: String,
     pub values: Vec<i8>,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagString {
     pub name: String,
     pub value: String,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagList {
     pub name: String,
@@ -361,14 +361,14 @@ pub struct NbtTagList {
     pub values: Vec<NbtTag>,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagIntArray {
     pub name: String,
     pub values: Vec<i32>,
 }
 
-#[pyclass]
+
 #[derive(Clone, new, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagLongArray {
     pub name: String,
