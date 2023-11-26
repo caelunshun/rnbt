@@ -41,7 +41,7 @@ pub struct PyMcWorldDescriptor {
     mc_world_descriptor: McWorldDescriptor,
     //TEST
     #[pyo3(get, set)]
-    pub ser_tag_compounts_list: Vec::<SerializablePyDict>
+    pub tag_compounts_list: Vec::<Py<PyDict>>
 }
 
 #[pymethods]
@@ -50,16 +50,16 @@ impl PyMcWorldDescriptor {
 
     pub fn new(rust_mc_world_descriptor: McWorldDescriptor) -> std::io::Result<Self> {
 
-        let mut py_tag_list = Vec::<SerializablePyDict>::new();
+        let mut py_tag_list = Vec::<Py<PyDict>>::new();
         
         rust_mc_world_descriptor.tag_compounds_list.iter().for_each(|item| {
             let tag_root = nbt_tag::NbtTag::Compound(item.clone());
-            py_tag_list.push(PyNbtTag::new(&tag_root).ser_python_dict)
+            py_tag_list.push(PyNbtTag::new(&tag_root).python_dict)
         });
 
         Ok(PyMcWorldDescriptor{ 
             mc_world_descriptor: rust_mc_world_descriptor, 
-            ser_tag_compounts_list: py_tag_list 
+            tag_compounts_list: py_tag_list 
         })
     }
 
@@ -182,7 +182,7 @@ impl McWorldDescriptor {
 }
 
 
-#[derive(Clone, Debug)]
+/* #[derive(Clone, Debug)]
 pub struct SerializablePyDict(Py<PyDict>);
 
 impl SerializablePyDict {
@@ -232,14 +232,14 @@ impl Serialize for SerializablePyDict {
             map.end()
         })
     }
-}
+} */
 
 #[pyclass(get_all)]
 #[derive(Clone, Debug)]
 pub struct PyNbtTag {
     //pub nbt_tag: &'a NbtTag,
-    //pub python_dict: Py<PyDict>,
-    pub ser_python_dict: SerializablePyDict
+    pub python_dict: Py<PyDict>,
+    //pub ser_python_dict: SerializablePyDict
 }
 
 //https://github.com/PyO3/pyo3/pull/3582 
@@ -247,16 +247,16 @@ impl PyNbtTag {
 
     pub fn new(nbt_tag: &nbt_tag::NbtTag) -> Self {
         let python_dict = Self::to_python_dictionary(&nbt_tag);
-        let ser_py_dict = Self::to_ser_python_dictionary(python_dict);
+        //let ser_py_dict = Self::to_ser_python_dictionary(python_dict);
         Self {
             //python_dict,
-            ser_python_dict: ser_py_dict
+            python_dict
         }
     }
 
-    fn to_ser_python_dictionary(py_dict: Py<PyDict>) -> SerializablePyDict {
+    /* fn to_ser_python_dictionary(py_dict: Py<PyDict>) -> SerializablePyDict {
         SerializablePyDict(py_dict)
-    }
+    } */
 
     fn to_python_dictionary(nbt_tag: & nbt_tag::NbtTag) -> Py<PyDict> {
         
@@ -366,7 +366,7 @@ impl PyNbtTag {
                     //not efficient, i am processind the data two times, but for now make it work
                     for list_element in &tag_list.values {
                         let py_list_element = PyNbtTag::new(list_element);
-                        let _ = py_list.append(py_list_element.ser_python_dict);
+                        let _ = py_list.append(py_list_element.python_dict);
 
                         let log_msg = format!("tag_list: parsed");
                         crate::py_log(log_msg);
@@ -386,7 +386,7 @@ impl PyNbtTag {
 
                     for (key, value) in tag_compound.values.iter() {
                         let py_tag = PyNbtTag::new(value);
-                        let _ = py_dict.set_item(key, py_tag.ser_python_dict);
+                        let _ = py_dict.set_item(key, py_tag.python_dict);
 
                         let log_msg = format!("tag_compound_hashmap: Name: {}, Value: {}", key, "[NbtTag]");
                         //let log_msg = format!("tag_compound_hashmap_tag: Name: {}, Value: {}", key, py_tag.python_dict.get_item(key).unwrap());
