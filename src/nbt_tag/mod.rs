@@ -1,13 +1,10 @@
 use byteorder::{BigEndian, WriteBytesExt};
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::io::Write;
-use serde::{ser::SerializeMap, Serialize, Deserialize};
+use serde::{Serialize, Deserialize};
 use std::fs;
 use std::io::{self, BufWriter, BufReader};
 use derive_new::new;
-
-use pyo3::prelude::*;
 
 #[cfg(test)]
 mod tests;
