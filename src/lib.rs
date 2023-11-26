@@ -60,43 +60,22 @@ pub struct PyMcWorldDescriptor {
 impl PyMcWorldDescriptor {
     #[new]
     pub fn new(rust_mc_world_descriptor: McWorldDescriptor) -> std::io::Result<Self> {
-        
-        //let path_str = rust_mc_world_descriptor.input_path.to_str().unwrap().to_string(); 
+
         let mut py_tag_list = Vec::<nbt_tag::SerializablePyDict>::new();
         
         rust_mc_world_descriptor.tag_compounds_list.iter().for_each(|item| {
             let tag_root = nbt_tag::NbtTag::Compound(item.clone());
             py_tag_list.push(PyNbtTag::new(&tag_root).ser_python_dict)
         });
-    
-        //TEST
-        //let py_tag_list_clone = py_tag_list.clone();
 
         Ok(PyMcWorldDescriptor{ 
             mc_world_descriptor: rust_mc_world_descriptor, 
             ser_tag_compounts_list: py_tag_list 
         })
-        /* Ok(PyMcWorldDescriptor {
-            input_path: path_str,
-            version: "0.0.0".to_string(),
-            tag_compounds_list: py_tag_list.into_iter().map(|s| s.get_py_dict().clone()).collect(),
-            ser_tag_compounts_list: py_tag_list_clone
-        }) */
     }
 
     pub fn to_json(&self, path: String) -> PyResult<()> {
-
         self.mc_world_descriptor.to_json(path).map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))
-        // Open a file for writing.
-/*         let file = fs::File::create(path)?;
-        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
-
-        // Write the pretty-printed JSON to the file.
-        serde_json::to_writer_pretty(writer, &self.ser_tag_compounts_list)
-                .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(format!("{}", e)))?;
-    
-            Ok(())
- */
     }
 
     /* pub fn from_json(&self, path: String) -> PyResult<Self> {
@@ -147,6 +126,13 @@ impl McWorldDescriptor {
                     Err(e) => return Err(e),
                 }
             }
+            else if ext == "json" {
+                let json_content = Self::from_json(input_path)?;
+
+                //TEMP: should actually check which kind of file is retrieved from the json (region, nbt, etc.)
+                //let mut compunds_list = Vec::new();
+                nbt_tag_compounds_list.push(json_content);
+            }
             Ok(McWorldDescriptor {
                 input_path: cloned_input_path,
                 version: "0.0.0".to_string(),
@@ -162,7 +148,7 @@ impl McWorldDescriptor {
     }
 
 
-        pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         // Open a file for writing.
         let file = fs::File::create(path)?;
         let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
@@ -171,6 +157,21 @@ impl McWorldDescriptor {
         serde_json::to_writer_pretty(writer, &self.tag_compounds_list)?;
         
         Ok(())
+    }
+
+     pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<nbt_tag::NbtTagCompound, io::Error> {
+
+        let file = fs::File::open(&path)?;
+        let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
+
+        // Deserialize the JSON data directly from the stream.;
+        let deserielazied_hashmap = serde_json::from_reader(reader)?;
+        
+        let mut deserialized_nbt = nbt_tag::NbtTagCompound::default();
+        deserialized_nbt.name = "root".to_string();
+        deserialized_nbt.values = deserielazied_hashmap;
+
+        Ok(deserialized_nbt)
     } 
 
     /* fn read_from_binary_file(input_path: PathBuf) -> std::io::Result<Vec<nbt_tag::NbtTagCompound>> {

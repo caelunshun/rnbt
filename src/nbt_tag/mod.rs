@@ -14,14 +14,14 @@ use pyo3::exceptions::{PyTypeError, PyKeyError};
 #[cfg(test)]
 mod tests;
 
-#[pyclass]
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NbtTagCompound {
     pub name: String,
     pub values: HashMap<String, NbtTag>,
 }
 
-#[pymethods]
+
 impl NbtTagCompound {
     #[new]
     pub fn new(name: &str) -> Self {
