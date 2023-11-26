@@ -127,7 +127,7 @@ impl McWorldDescriptor {
                 }
             }
             else if ext == "json" {
-                let json_content = Self::from_json(input_path)?;
+                let json_content = nbt_tag::NbtTagCompound::from_json(input_path)?;//Self::from_json(input_path)?;
 
                 //TEMP: should actually check which kind of file is retrieved from the json (region, nbt, etc.)
                 //let mut compunds_list = Vec::new();
@@ -148,31 +148,11 @@ impl McWorldDescriptor {
     }
 
 
-    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
-        // Open a file for writing.
-        let file = fs::File::create(path)?;
-        let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
-
-        // Write the pretty-printed JSON to the file.
-        serde_json::to_writer_pretty(writer, &self.tag_compounds_list)?;
+     pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         
-        Ok(())
+        Ok(self.tag_compounds_list.get(0).unwrap().to_json(path)?)
+
     }
-
-     pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<nbt_tag::NbtTagCompound, io::Error> {
-
-        let file = fs::File::open(&path)?;
-        let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
-
-        // Deserialize the JSON data directly from the stream.;
-        let deserielazied_hashmap = serde_json::from_reader(reader)?;
-        
-        let mut deserialized_nbt = nbt_tag::NbtTagCompound::default();
-        deserialized_nbt.name = "root".to_string();
-        deserialized_nbt.values = deserielazied_hashmap;
-
-        Ok(deserialized_nbt)
-    } 
 
     /* fn read_from_binary_file(input_path: PathBuf) -> std::io::Result<Vec<nbt_tag::NbtTagCompound>> {
         if let Some(ext) = input_path.extension().and_then(|e| e.to_str()) {

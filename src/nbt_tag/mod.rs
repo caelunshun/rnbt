@@ -23,7 +23,6 @@ pub struct NbtTagCompound {
 
 
 impl NbtTagCompound {
-    #[new]
     pub fn new(name: &str) -> Self {
         Self {
             name: name.to_string(),
@@ -39,7 +38,7 @@ impl NbtTagCompound {
         self.values.insert(name.to_string(), value);
     } */
 
-/*     pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
+    pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         // Open a file for writing.
         let file = fs::File::create(path)?;
         let writer = BufWriter::new(file); // Using a BufWriter for more efficient writes.
@@ -48,7 +47,7 @@ impl NbtTagCompound {
         serde_json::to_writer_pretty(writer, &self)?;
         
         Ok(())
-    } */
+    }
 
     /* pub fn to_json<P: AsRef<std::path::Path>>(&self, path: P) -> io::Result<()> {
         // Open a file for writing.
@@ -62,7 +61,7 @@ impl NbtTagCompound {
     }
  */
 
-   /*  pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
+    pub fn from_json<P: AsRef<std::path::Path>>(path: P) -> Result<Self, io::Error> {
 
         let file = fs::File::open(path)?;
         let reader = BufReader::new(file); // Wrap the file in a BufReader, since very large file are expected.
@@ -72,7 +71,7 @@ impl NbtTagCompound {
         
         Ok(deserialized_nbt)
 
-    } */
+    }
 
     /* pub fn from_json(&self, path: String) -> PyResult<Self> {
         let path = PathBuf::from(path);
