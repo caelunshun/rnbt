@@ -41,7 +41,7 @@ pub struct PyMcWorldDescriptor {
     mc_world_descriptor: McWorldDescriptor,
     //TEST
     #[pyo3(get, set)]
-    pub tag_compounts_list: Vec::<Py<PyDict>>
+    pub tag_compounds_list: Vec::<Py<PyDict>>
 }
 
 #[pymethods]
@@ -59,7 +59,7 @@ impl PyMcWorldDescriptor {
 
         Ok(PyMcWorldDescriptor{ 
             mc_world_descriptor: rust_mc_world_descriptor, 
-            tag_compounts_list: py_tag_list 
+            tag_compounds_list: py_tag_list 
         })
     }
 
